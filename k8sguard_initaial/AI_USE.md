@@ -15,3 +15,8 @@ and verify repository commits before mid-evaluation claims.
 - 2026-10-13: ChatGPT implemented conditional RBAC attack transitions, CIS-aligned local checks, regression tests, and the Stage 6 UI. Human review and local execution pending.
 
 2026-10-13: AI-assisted addition of Stage 7 NetworkPolicy model, regression tests, optional read-only local cluster collector, and documentation. Human review and local cluster testing pending. The policy model intentionally does not claim actual CNI connectivity.
+
+## 2026-10-13 Stage 8
+- Assistant implemented frontend interactive attack graph from Stage 7 scanner JSON in `frontend/src/AttackGraph.jsx`, `frontend/src/attack-graph.scss`, updated `frontend/src/main.jsx`.
+- Node/edge selection, search, kind filter, path highlighting, pan/zoom, evidence inspector; no fabricated data.
+- `python -m pytest tests -q`: 30 passed. Frontend `npm install` timed out and frontend build is **not verified** in this environment; verify locally before evaluation.

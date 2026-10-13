@@ -142,3 +142,11 @@ It warns when permissions or API calls prevent complete collection. Do not
 publish scan outputs without reviewing sensitive resource metadata.
 
 Run tests: `cd backend && python -m pytest tests -q`.
+
+## Stage 8: Interactive attack graph
+
+The **Attack Graph** tab now displays all nodes and eligible edges returned by Module A (no 45-node preview limit). It includes search, resource-type filters, optional semantic annotations, candidate path selection/highlighting, mouse-drag panning, zoom buttons/Ctrl+wheel zoom, and a node/edge evidence inspector. All graph contents come from the scan response. Conditional path labels do **not** assert exploitation occurred.
+
+Start backend (`cd backend && uvicorn app.main:app --reload`) and frontend (`cd frontend && npm install && npm run dev`), then upload `fixtures/operator_and_paths.yaml`. Click **Attack Graph**, select an available path in the dropdown, and inspect the highlighted nodes/edges. Graph layout is deterministic by resource type, optimized for demonstrable small/medium fixture scans, rather than optimized for huge production clusters.
+
+Backend tests pass locally (30). The frontend npm install/build needs local verification; installation timed out in the package authoring environment.
