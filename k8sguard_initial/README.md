@@ -156,3 +156,20 @@ Backend tests pass locally (30). The frontend npm install/build needs local veri
 Run `python -m pytest backend/tests -q` from repository root with backend dependencies installed and `PYTHONPATH=backend` set (or run from `backend` with `python -m pytest tests -q`).
 Run `python evaluation/generate_evidence.py` from the repository root to export deterministic fixture scan results into `evaluation/results/`. These results do not imply benchmark equivalence or coverage.
 See `evaluation/KUBESCAPE_COMPARISON_PROTOCOL.md` and `evaluation/MID_EVAL_EVIDENCE_CHECKLIST.md`.
+
+## Local live-cluster frontend scan (Stage 10 integration)
+
+Run **both kind/kubectl and the FastAPI backend inside WSL2**. Check `kubectl get nodes` first.
+
+```bash
+cd backend
+source .venv/bin/activate
+export K8SGUARD_CONTEXT="$(kubectl config current-context)"
+export K8SGUARD_LOCAL_SCAN_TOKEN="$(python -c 'import secrets; print(secrets.token_urlsafe(32))')"
+echo "$K8SGUARD_LOCAL_SCAN_TOKEN"  # copy privately into the frontend's password field
+uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+
+Run the React frontend (`npm install && npm run dev` in `frontend`). Open the local URL, paste the token into **Local scan token**, click **Scan Live Cluster**, and navigate to **Attack Graph**. Token is held only in component memory, cleared on successful request; never commit it or expose the backend publicly. Keep the backend bound to 127.0.0.1. The live API runs the existing `collect_snapshot(context=...)` and `analyze(...)` pipeline and stores the result in the same in-memory scan registry as manifest uploads. Collection warnings are shown, and a partial snapshot is not proof of cluster security. Dynamic CRD instances are not collected yet. On a backend restart, in-memory scans disappear.
+
+Tests: `cd backend && python -m pytest tests -q`. A frontend production build remains to be checked on your machine if npm cannot download packages here.

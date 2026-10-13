@@ -2,3 +2,5 @@
 .mapping {display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:12px;} .mapping a,.mapping span {padding:4px 8px;border:1px solid #3a475a;border-radius:6px;color:#a9cbf7;text-decoration:none;}
 
 .graph-scroll{overflow:auto;background:#0a1626;border:1px solid #304258;border-radius:12px;margin:16px 0;padding:8px;max-width:100%}
+
+.scan-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.scan-actions input{background:#18283b;border:1px solid #426077;border-radius:8px;color:#fff;padding:12px;width:195px}.scan-actions button:disabled{opacity:.5;cursor:not-allowed}.upload{display:inline-block;white-space:nowrap}
