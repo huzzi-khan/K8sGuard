@@ -9,3 +9,5 @@ and verify repository commits before mid-evaluation claims.
 - 2026-10-13: ChatGPT assisted with Module A workload checks, recognized Operator/CRD references, limited NetworkPolicy inventory, conservative authorization capability paths, regression tests, and frontend rendering. Human team must review semantic correctness and evaluate against Kubescape. Full network-path and live-cluster features were NOT implemented in this increment.
 
 - 2026-10-13: ChatGPT implemented framework crosswalk, graph semantic technique annotations, UI display, and regression tests. Core attack graph remains human-review-required; validate framework relationships against sources before publication.
+
+2026-10-13 | ChatGPT | Stage 5: local CORS origin support, frontend API error messages and bounded SVG graph visualization, NetworkPolicy LabelSelector coverage for supplied Pod objects, tests, docs | Human verification: frontend npm build requires local installation; backend 20 tests verified in packaging environment.

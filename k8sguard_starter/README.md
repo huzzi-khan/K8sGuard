@@ -88,3 +88,10 @@ The scan result now provides `mitre_attack` and `cis_kubernetes` entries on find
 CIS Kubernetes Benchmark mappings are **topics**, without numbered controls or compliance scores. Before claiming control-level compliance, select a published CIS Kubernetes Benchmark version compatible with the evaluated Kubernetes distribution/version and verify each rule against that source.
 
 Next engineering milestones: selector-aware NetworkPolicy reachability, genuinely multi-hop validated graph rules, generalized CRD discovery, read-only live cluster ingestion, interactive graph visualization, and Kubescape baseline evaluation. Do not describe these as completed.
+
+
+## Stage 5 patch
+- Local CORS origins localhost and 127.0.0.1 (Vite ports 5173/5174) supported. Configure frontend API via `VITE_API_URL` if needed.
+- NetworkPolicy LabelSelectors are evaluated against provided **Pod** manifests; the scanner does not assert network reachability or inspect running workloads.
+- Run `cd backend && python -m pytest tests -q`, then `cd frontend && npm install && npm run build`.
+- Browser console errors can distinguish CORS from backend failures; successful API 200 responses alone do not establish browser access.
