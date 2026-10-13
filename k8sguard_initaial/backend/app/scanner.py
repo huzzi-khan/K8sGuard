@@ -8,6 +8,7 @@ from .rbac import collect_effective_access, grant_findings
 from .attack_engine import capability_transitions
 from .cis_checks import evaluate_static_controls
 from .frameworks import annotate
+from .network_reachability import evaluate_flows
 from .module_a import inspect_workloads, inspect_operator_references, inspect_network_policies, derive_attack_paths
 
 MAX_DOCUMENTS = 100
@@ -84,15 +85,16 @@ def analyze(docs: list[dict[str, Any]]) -> dict[str, Any]:
     inspect_workloads(docs, g, findings)
     reference_links = inspect_operator_references(docs, g, findings)
     network_policies = inspect_network_policies(docs, findings)
+    network_flows = evaluate_flows(docs)
     attack_paths = derive_attack_paths(effective_permissions, docs, g)
     transitions = capability_transitions(docs, effective_permissions, g)
     cis_checks = evaluate_static_controls(docs)
     return annotate({"effective_permissions": effective_permissions, "unresolved_references": unresolved, "resources": len(docs), "nodes": [{"id": n, **attrs} for n, attrs in g.nodes(data=True)],
             "edges": [{"source": u, "target": v, **attrs} for u, v, attrs in g.edges(data=True)],
-            "findings": findings, "attack_paths": attack_paths, "attack_transitions": transitions, "cis_checks": cis_checks, "operator_references": reference_links, "network_policies": network_policies,
+            "findings": findings, "attack_paths": attack_paths, "attack_transitions": transitions, "cis_checks": cis_checks, "operator_references": reference_links, "network_policies": network_policies, "network_flows": network_flows,
             "limitations": ["Initial rules only: findings are capabilities, not proven exploit paths.",
                              "Offline RBAC only covers explicit ServiceAccount subjects and supplied roles; unresolved references are returned.",
-                             "NetworkPolicy selectors are evaluated for supplied Pod objects only; effective traffic reachability is not computed; attack paths are capabilities, not demonstrated exploits.",
+                             "Pod-to-pod TCP policy allowance is evaluated for supplied Pods and ports 80/443 only; this does not establish actual connectivity, CNI enforcement or live-cluster reachability.",
                              "Operator references use a finite set of known field names and only confirm targets present in the supplied snapshot.",
                              "Live Kubernetes collection and unrestricted schema-agnostic CRD discovery are not implemented.",
                              "CIS-aligned local checks are not official benchmark control audits; missing values are unknown, not pass.",

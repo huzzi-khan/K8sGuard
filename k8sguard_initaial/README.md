@@ -115,3 +115,30 @@ Run tests: `cd backend && python -m pytest tests -q`.
 Still outstanding: version-specific benchmark verification, full Kubernetes network
 semantics, robust multi-hop exploit-state transitions, live-cluster ingestion, broad
 Operator/CRD reference resolution and Kubescape comparison evidence.
+
+## Stage 7 — Pod-to-Pod NetworkPolicy evaluation and local live scan
+
+The scan result now includes `network_flows`: source/target Pod, port (TCP 80/443),
+policy result `allowed` / `denied` / `unknown`, and the relevant policies. Both
+source egress and destination ingress policies must allow a connection.
+`allowed` only means **permitted by the supplied policy snapshot**, not that a
+connection can actually be established. Named ports, ipBlocks, service routing,
+host networking, CNI behavior, nodes and absent namespace objects are not fully
+simulated. A missing Policy from an incomplete YAML snapshot can change results.
+
+Run optional **read-only** live snapshot collection locally (never in a browser):
+
+```bash
+cd backend
+pip install -r requirements.txt
+python -m app.cluster_collect --context kind-k8sguard-poc --output scan.json
+```
+
+Use `kubectl config get-contexts` to find your actual context. The collector
+reads Pods, Namespaces, ServiceAccounts, deployments, daemonsets, statefulsets,
+Jobs/CronJobs, RBAC objects, and NetworkPolicies; it does **not** apply objects
+or collect secrets' values. It does not yet enumerate arbitrary CRD instances.
+It warns when permissions or API calls prevent complete collection. Do not
+publish scan outputs without reviewing sensitive resource metadata.
+
+Run tests: `cd backend && python -m pytest tests -q`.

@@ -13,3 +13,5 @@ and verify repository commits before mid-evaluation claims.
 2026-10-13 | ChatGPT | Stage 5: local CORS origin support, frontend API error messages and bounded SVG graph visualization, NetworkPolicy LabelSelector coverage for supplied Pod objects, tests, docs | Human verification: frontend npm build requires local installation; backend 20 tests verified in packaging environment.
 
 - 2026-10-13: ChatGPT implemented conditional RBAC attack transitions, CIS-aligned local checks, regression tests, and the Stage 6 UI. Human review and local execution pending.
+
+2026-10-13: AI-assisted addition of Stage 7 NetworkPolicy model, regression tests, optional read-only local cluster collector, and documentation. Human review and local cluster testing pending. The policy model intentionally does not claim actual CNI connectivity.
