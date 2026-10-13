@@ -95,3 +95,23 @@ Next engineering milestones: selector-aware NetworkPolicy reachability, genuinel
 - NetworkPolicy LabelSelectors are evaluated against provided **Pod** manifests; the scanner does not assert network reachability or inspect running workloads.
 - Run `cd backend && python -m pytest tests -q`, then `cd frontend && npm install && npm run build`.
 - Browser console errors can distinguish CORS from backend failures; successful API 200 responses alone do not establish browser access.
+
+
+## Stage 6: conditional transitions and CIS-aligned checks
+
+Offline manifest scans now return `attack_transitions` and `cis_checks`.
+`attack_transitions` describe **conditional** paths from an assumed compromised workload
+to an RBAC-granted capability. They require API credentials and reachability and do
+not demonstrate a working exploit. A PodSpec `automountServiceAccountToken: false`
+prevents these automatic-token-assumption transitions. Other credential-delivery
+mechanisms are not modeled.
+
+`cis_checks` are K8sGuard-authored, CIS-themed static checks with stable local IDs.
+They **do not** claim individual numbered CIS controls or a compliance score.
+Unspecified security context values are recorded as `unknown`.
+
+Run tests: `cd backend && python -m pytest tests -q`.
+
+Still outstanding: version-specific benchmark verification, full Kubernetes network
+semantics, robust multi-hop exploit-state transitions, live-cluster ingestion, broad
+Operator/CRD reference resolution and Kubescape comparison evidence.
