@@ -150,3 +150,9 @@ The **Attack Graph** tab now displays all nodes and eligible edges returned by M
 Start backend (`cd backend && uvicorn app.main:app --reload`) and frontend (`cd frontend && npm install && npm run dev`), then upload `fixtures/operator_and_paths.yaml`. Click **Attack Graph**, select an available path in the dropdown, and inspect the highlighted nodes/edges. Graph layout is deterministic by resource type, optimized for demonstrable small/medium fixture scans, rather than optimized for huge production clusters.
 
 Backend tests pass locally (30). The frontend npm install/build needs local verification; installation timed out in the package authoring environment.
+
+## Stage 9: reproducible mid-evaluation evidence
+
+Run `python -m pytest backend/tests -q` from repository root with backend dependencies installed and `PYTHONPATH=backend` set (or run from `backend` with `python -m pytest tests -q`).
+Run `python evaluation/generate_evidence.py` from the repository root to export deterministic fixture scan results into `evaluation/results/`. These results do not imply benchmark equivalence or coverage.
+See `evaluation/KUBESCAPE_COMPARISON_PROTOCOL.md` and `evaluation/MID_EVAL_EVIDENCE_CHECKLIST.md`.

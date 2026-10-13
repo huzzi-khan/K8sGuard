@@ -1,0 +1,701 @@
+{
+  "effective_permissions": [
+    {
+      "subject": "ServiceAccount/demo/scanner",
+      "binding": "RoleBinding/demo/grant-excessive",
+      "role": "Role/demo/excessive",
+      "apiGroups": [
+        ""
+      ],
+      "resources": [
+        "*"
+      ],
+      "verbs": [
+        "*"
+      ],
+      "resourceNames": [],
+      "nonResourceURLs": [],
+      "scope": "demo"
+    },
+    {
+      "subject": "ServiceAccount/demo/scanner",
+      "binding": "RoleBinding/demo/grant-excessive",
+      "role": "Role/demo/excessive",
+      "apiGroups": [
+        ""
+      ],
+      "resources": [
+        "secrets"
+      ],
+      "verbs": [
+        "get",
+        "list"
+      ],
+      "resourceNames": [],
+      "nonResourceURLs": [],
+      "scope": "demo"
+    }
+  ],
+  "unresolved_references": [],
+  "resources": 4,
+  "nodes": [
+    {
+      "id": "ServiceAccount/demo/scanner",
+      "label": "scanner",
+      "kind": "ServiceAccount",
+      "namespace": "demo"
+    },
+    {
+      "id": "Role/demo/excessive",
+      "label": "excessive",
+      "kind": "Role",
+      "namespace": "demo"
+    },
+    {
+      "id": "RoleBinding/demo/grant-excessive",
+      "label": "grant-excessive",
+      "kind": "RoleBinding",
+      "namespace": "demo"
+    },
+    {
+      "id": "Pod/demo/vulnerable-pod",
+      "label": "vulnerable-pod",
+      "kind": "Pod",
+      "namespace": "demo"
+    },
+    {
+      "id": "MITRE/T1078",
+      "kind": "MitreTechnique",
+      "label": "T1078: Valid Accounts",
+      "namespace": "framework"
+    },
+    {
+      "id": "MITRE/T1609",
+      "kind": "MitreTechnique",
+      "label": "T1609: Container Administration Command",
+      "namespace": "framework"
+    },
+    {
+      "id": "MITRE/T1611",
+      "kind": "MitreTechnique",
+      "label": "T1611: Escape to Host",
+      "namespace": "framework"
+    }
+  ],
+  "edges": [
+    {
+      "source": "ServiceAccount/demo/scanner",
+      "target": "RoleBinding/demo/grant-excessive",
+      "relation": "bound_by"
+    },
+    {
+      "source": "RoleBinding/demo/grant-excessive",
+      "target": "Role/demo/excessive",
+      "relation": "grants_role"
+    },
+    {
+      "source": "Pod/demo/vulnerable-pod",
+      "target": "ServiceAccount/demo/scanner",
+      "relation": "uses_service_account"
+    },
+    {
+      "source": "Role/demo/excessive",
+      "target": "MITRE/T1078",
+      "relation": "potential_attack_technique",
+      "finding_id": "F-001",
+      "semantic_only": true
+    },
+    {
+      "source": "Role/demo/excessive",
+      "target": "MITRE/T1078",
+      "relation": "potential_attack_technique",
+      "finding_id": "F-002",
+      "semantic_only": true
+    },
+    {
+      "source": "Pod/demo/vulnerable-pod",
+      "target": "MITRE/T1611",
+      "relation": "potential_attack_technique",
+      "finding_id": "F-003",
+      "semantic_only": true
+    },
+    {
+      "source": "Pod/demo/vulnerable-pod",
+      "target": "MITRE/T1611",
+      "relation": "potential_attack_technique",
+      "finding_id": "A-0009",
+      "semantic_only": true
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-001",
+      "rule": "RBAC_WILDCARD",
+      "severity": "high",
+      "resource": "Role/demo/excessive",
+      "description": "Role grants wildcard API verbs or resources",
+      "evidence": {
+        "kind": "Role",
+        "name": "excessive"
+      },
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "topic": "RBAC least privilege",
+          "benchmark_version": null,
+          "control_id": null,
+          "status": "candidate_mapping_requires_versioned_review"
+        }
+      ]
+    },
+    {
+      "id": "F-002",
+      "rule": "RBAC_SECRET_READ",
+      "severity": "high",
+      "resource": "Role/demo/excessive",
+      "description": "Role can read Kubernetes Secrets",
+      "evidence": {
+        "kind": "Role",
+        "name": "excessive"
+      },
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "topic": "RBAC least privilege / secrets access",
+          "benchmark_version": null,
+          "control_id": null,
+          "status": "candidate_mapping_requires_versioned_review"
+        }
+      ]
+    },
+    {
+      "id": "F-003",
+      "rule": "PRIVILEGED_CONTAINER",
+      "severity": "critical",
+      "resource": "Pod/demo/vulnerable-pod",
+      "description": "Container app is privileged",
+      "evidence": {
+        "kind": "Pod",
+        "name": "vulnerable-pod"
+      },
+      "mitre_attack": [
+        {
+          "technique_id": "T1611",
+          "name": "Escape to Host",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1611/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "topic": "Pod/container privilege restrictions",
+          "benchmark_version": null,
+          "control_id": null,
+          "status": "candidate_mapping_requires_versioned_review"
+        }
+      ]
+    },
+    {
+      "id": "RB-001",
+      "rule": "EFFECTIVE_RBAC_WILDCARD",
+      "severity": "high",
+      "resource": "ServiceAccount/demo/scanner",
+      "description": "Binding grants wildcard permissions",
+      "evidence": {
+        "binding": "RoleBinding/demo/grant-excessive",
+        "role": "Role/demo/excessive",
+        "scope": "demo",
+        "apiGroups": [
+          ""
+        ],
+        "resources": [
+          "*"
+        ],
+        "verbs": [
+          "*"
+        ],
+        "resourceNames": []
+      },
+      "mitre_attack": [],
+      "cis_kubernetes": []
+    },
+    {
+      "id": "RB-002",
+      "rule": "EFFECTIVE_SECRET_READ",
+      "severity": "high",
+      "resource": "ServiceAccount/demo/scanner",
+      "description": "ServiceAccount can read Secrets in the indicated scope",
+      "evidence": {
+        "binding": "RoleBinding/demo/grant-excessive",
+        "role": "Role/demo/excessive",
+        "scope": "demo",
+        "apiGroups": [
+          ""
+        ],
+        "resources": [
+          "*"
+        ],
+        "verbs": [
+          "*"
+        ],
+        "resourceNames": []
+      },
+      "mitre_attack": [],
+      "cis_kubernetes": []
+    },
+    {
+      "id": "RB-003",
+      "rule": "EFFECTIVE_RBAC_MUTATION",
+      "severity": "critical",
+      "resource": "ServiceAccount/demo/scanner",
+      "description": "ServiceAccount can modify access-control resources",
+      "evidence": {
+        "binding": "RoleBinding/demo/grant-excessive",
+        "role": "Role/demo/excessive",
+        "scope": "demo",
+        "apiGroups": [
+          ""
+        ],
+        "resources": [
+          "*"
+        ],
+        "verbs": [
+          "*"
+        ],
+        "resourceNames": []
+      },
+      "mitre_attack": [],
+      "cis_kubernetes": []
+    },
+    {
+      "id": "RB-004",
+      "rule": "EFFECTIVE_POD_EXEC",
+      "severity": "high",
+      "resource": "ServiceAccount/demo/scanner",
+      "description": "ServiceAccount may initiate pod exec/attach requests",
+      "evidence": {
+        "binding": "RoleBinding/demo/grant-excessive",
+        "role": "Role/demo/excessive",
+        "scope": "demo",
+        "apiGroups": [
+          ""
+        ],
+        "resources": [
+          "*"
+        ],
+        "verbs": [
+          "*"
+        ],
+        "resourceNames": []
+      },
+      "mitre_attack": [],
+      "cis_kubernetes": []
+    },
+    {
+      "id": "RB-005",
+      "rule": "EFFECTIVE_SECRET_READ",
+      "severity": "high",
+      "resource": "ServiceAccount/demo/scanner",
+      "description": "ServiceAccount can read Secrets in the indicated scope",
+      "evidence": {
+        "binding": "RoleBinding/demo/grant-excessive",
+        "role": "Role/demo/excessive",
+        "scope": "demo",
+        "apiGroups": [
+          ""
+        ],
+        "resources": [
+          "secrets"
+        ],
+        "verbs": [
+          "get",
+          "list"
+        ],
+        "resourceNames": []
+      },
+      "mitre_attack": [],
+      "cis_kubernetes": []
+    },
+    {
+      "id": "A-0009",
+      "rule": "PRIVILEGED_CONTAINER",
+      "severity": "critical",
+      "resource": "Pod/demo/vulnerable-pod",
+      "description": "app runs privileged",
+      "evidence": {
+        "container": "app"
+      },
+      "category": "capability",
+      "mitre_attack": [
+        {
+          "technique_id": "T1611",
+          "name": "Escape to Host",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1611/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "topic": "Pod/container privilege restrictions",
+          "benchmark_version": null,
+          "control_id": null,
+          "status": "candidate_mapping_requires_versioned_review"
+        }
+      ]
+    }
+  ],
+  "attack_paths": [
+    {
+      "id": "P-001",
+      "rule": "SECRET_READ_CAPABILITY",
+      "severity": "high",
+      "nodes": [
+        "Pod/demo/vulnerable-pod",
+        "ServiceAccount/demo/scanner",
+        "RoleBinding/demo/grant-excessive",
+        "Role/demo/excessive"
+      ],
+      "scope": "demo",
+      "classification": "capability_path",
+      "description": "Read access to secrets can expose credentials",
+      "evidence": {
+        "verbs": [
+          "*"
+        ],
+        "resources": [
+          "*"
+        ]
+      },
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "topic": "RBAC least privilege / secrets access",
+          "benchmark_version": null,
+          "control_id": null,
+          "status": "candidate_mapping_requires_versioned_review"
+        }
+      ]
+    },
+    {
+      "id": "P-002",
+      "rule": "RBAC_BINDING_MUTATION_CAPABILITY",
+      "severity": "critical",
+      "nodes": [
+        "Pod/demo/vulnerable-pod",
+        "ServiceAccount/demo/scanner",
+        "RoleBinding/demo/grant-excessive",
+        "Role/demo/excessive"
+      ],
+      "scope": "demo",
+      "classification": "capability_path",
+      "description": "Can alter access bindings; actual escalation depends on admission and escalation safeguards",
+      "evidence": {
+        "verbs": [
+          "*"
+        ],
+        "resources": [
+          "*"
+        ]
+      },
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "topic": "RBAC least privilege",
+          "benchmark_version": null,
+          "control_id": null,
+          "status": "candidate_mapping_requires_versioned_review"
+        }
+      ]
+    },
+    {
+      "id": "P-003",
+      "rule": "POD_EXEC_CAPABILITY",
+      "severity": "high",
+      "nodes": [
+        "Pod/demo/vulnerable-pod",
+        "ServiceAccount/demo/scanner",
+        "RoleBinding/demo/grant-excessive",
+        "Role/demo/excessive"
+      ],
+      "scope": "demo",
+      "classification": "capability_path",
+      "description": "May execute in an authorized pod, subject to API controls",
+      "evidence": {
+        "verbs": [
+          "*"
+        ],
+        "resources": [
+          "*"
+        ]
+      },
+      "mitre_attack": [
+        {
+          "technique_id": "T1609",
+          "name": "Container Administration Command",
+          "tactic": "Execution",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1609/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "topic": "RBAC least privilege",
+          "benchmark_version": null,
+          "control_id": null,
+          "status": "candidate_mapping_requires_versioned_review"
+        }
+      ]
+    }
+  ],
+  "attack_transitions": [
+    {
+      "id": "T-001",
+      "rule": "POTENTIAL_SECRET_ACCESS",
+      "severity": "high",
+      "classification": "conditional_attack_transition",
+      "nodes": [
+        "Pod/demo/vulnerable-pod",
+        "ServiceAccount/demo/scanner",
+        "RoleBinding/demo/grant-excessive",
+        "Role/demo/excessive"
+      ],
+      "initial_state": "Assumed code execution in Pod/demo/vulnerable-pod",
+      "possible_effect": "Kubernetes API read of Secret objects",
+      "preconditions": [
+        "Hypothetical attacker code execution in the workload",
+        "Usable API credentials for the workload ServiceAccount",
+        "API server reachable and authorization rules applicable",
+        "Target Secret exists within the grant scope and meets resourceNames restrictions"
+      ],
+      "credential_mount": "not_explicitly_disabled",
+      "scope": "demo",
+      "mitre_technique": "T1078",
+      "evidence": {
+        "binding": "RoleBinding/demo/grant-excessive",
+        "role": "Role/demo/excessive",
+        "verbs": [
+          "*"
+        ],
+        "resources": [
+          "*"
+        ],
+        "resourceNames": []
+      },
+      "confidence": "conditional; not an observed compromise"
+    },
+    {
+      "id": "T-002",
+      "rule": "POTENTIAL_RBAC_MUTATION",
+      "severity": "critical",
+      "classification": "conditional_attack_transition",
+      "nodes": [
+        "Pod/demo/vulnerable-pod",
+        "ServiceAccount/demo/scanner",
+        "RoleBinding/demo/grant-excessive",
+        "Role/demo/excessive"
+      ],
+      "initial_state": "Assumed code execution in Pod/demo/vulnerable-pod",
+      "possible_effect": "Kubernetes RBAC binding modification",
+      "preconditions": [
+        "Hypothetical attacker code execution in the workload",
+        "Usable API credentials for the workload ServiceAccount",
+        "API server reachable and authorization rules applicable",
+        "API admission and RBAC bind/escalate safeguards also permit the requested modification"
+      ],
+      "credential_mount": "not_explicitly_disabled",
+      "scope": "demo",
+      "mitre_technique": "T1078",
+      "evidence": {
+        "binding": "RoleBinding/demo/grant-excessive",
+        "role": "Role/demo/excessive",
+        "verbs": [
+          "*"
+        ],
+        "resources": [
+          "*"
+        ],
+        "resourceNames": []
+      },
+      "confidence": "conditional; not an observed compromise"
+    },
+    {
+      "id": "T-003",
+      "rule": "POTENTIAL_WORKLOAD_CREATION",
+      "severity": "high",
+      "classification": "conditional_attack_transition",
+      "nodes": [
+        "Pod/demo/vulnerable-pod",
+        "ServiceAccount/demo/scanner",
+        "RoleBinding/demo/grant-excessive",
+        "Role/demo/excessive"
+      ],
+      "initial_state": "Assumed code execution in Pod/demo/vulnerable-pod",
+      "possible_effect": "Workload creation permission",
+      "preconditions": [
+        "Hypothetical attacker code execution in the workload",
+        "Usable API credentials for the workload ServiceAccount",
+        "API server reachable and authorization rules applicable"
+      ],
+      "credential_mount": "not_explicitly_disabled",
+      "scope": "demo",
+      "mitre_technique": "T1610",
+      "evidence": {
+        "binding": "RoleBinding/demo/grant-excessive",
+        "role": "Role/demo/excessive",
+        "verbs": [
+          "*"
+        ],
+        "resources": [
+          "*"
+        ],
+        "resourceNames": []
+      },
+      "confidence": "conditional; not an observed compromise"
+    }
+  ],
+  "cis_checks": [
+    {
+      "rule_id": "K8SG-CIS-PRIVILEGED",
+      "resource": "Pod/demo/vulnerable-pod",
+      "container": "app",
+      "status": "fail",
+      "evidence": {
+        "field": "securityContext.privileged",
+        "value": true
+      },
+      "benchmark": "CIS Kubernetes Benchmark",
+      "benchmark_version": null,
+      "cis_control_id": null,
+      "assessment_type": "cis_aligned_local_check_not_compliance"
+    },
+    {
+      "rule_id": "K8SG-CIS-ESCALATION",
+      "resource": "Pod/demo/vulnerable-pod",
+      "container": "app",
+      "status": "unknown",
+      "evidence": {
+        "field": "securityContext.allowPrivilegeEscalation",
+        "value": null
+      },
+      "benchmark": "CIS Kubernetes Benchmark",
+      "benchmark_version": null,
+      "cis_control_id": null,
+      "assessment_type": "cis_aligned_local_check_not_compliance"
+    },
+    {
+      "rule_id": "K8SG-CIS-ROOTFS",
+      "resource": "Pod/demo/vulnerable-pod",
+      "container": "app",
+      "status": "unknown",
+      "evidence": {
+        "field": "securityContext.readOnlyRootFilesystem",
+        "value": null
+      },
+      "benchmark": "CIS Kubernetes Benchmark",
+      "benchmark_version": null,
+      "cis_control_id": null,
+      "assessment_type": "cis_aligned_local_check_not_compliance"
+    },
+    {
+      "rule_id": "K8SG-CIS-HOSTNETWORK",
+      "resource": "Pod/demo/vulnerable-pod",
+      "status": "unknown",
+      "evidence": {
+        "field": "spec.hostNetwork",
+        "value": null
+      },
+      "benchmark": "CIS Kubernetes Benchmark",
+      "benchmark_version": null,
+      "cis_control_id": null,
+      "assessment_type": "cis_aligned_local_check_not_compliance"
+    },
+    {
+      "rule_id": "K8SG-CIS-HOSTPID",
+      "resource": "Pod/demo/vulnerable-pod",
+      "status": "unknown",
+      "evidence": {
+        "field": "spec.hostPID",
+        "value": null
+      },
+      "benchmark": "CIS Kubernetes Benchmark",
+      "benchmark_version": null,
+      "cis_control_id": null,
+      "assessment_type": "cis_aligned_local_check_not_compliance"
+    },
+    {
+      "rule_id": "K8SG-CIS-HOSTIPC",
+      "resource": "Pod/demo/vulnerable-pod",
+      "status": "unknown",
+      "evidence": {
+        "field": "spec.hostIPC",
+        "value": null
+      },
+      "benchmark": "CIS Kubernetes Benchmark",
+      "benchmark_version": null,
+      "cis_control_id": null,
+      "assessment_type": "cis_aligned_local_check_not_compliance"
+    }
+  ],
+  "operator_references": [],
+  "network_policies": [],
+  "network_flows": [],
+  "limitations": [
+    "Initial rules only: findings are capabilities, not proven exploit paths.",
+    "Offline RBAC only covers explicit ServiceAccount subjects and supplied roles; unresolved references are returned.",
+    "Pod-to-pod TCP policy allowance is evaluated for supplied Pods and ports 80/443 only; this does not establish actual connectivity, CNI enforcement or live-cluster reachability.",
+    "Operator references use a finite set of known field names and only confirm targets present in the supplied snapshot.",
+    "Live Kubernetes collection and unrestricted schema-agnostic CRD discovery are not implemented.",
+    "CIS-aligned local checks are not official benchmark control audits; missing values are unknown, not pass.",
+    "Conditional attack transitions assume an attacker foothold and usable credentials; they do not prove exploitation.",
+    "MITRE edges indicate potential enabling conditions, not observed attacker behavior or confirmed exploit chains.",
+    "CIS topics are indicative only; choose a benchmark version and verify exact control IDs before claiming compliance."
+  ],
+  "frameworks": {
+    "mitre_attack": {
+      "matrix": "Enterprise ATT&CK / Containers",
+      "techniques_used": [
+        "T1078",
+        "T1609",
+        "T1611"
+      ]
+    },
+    "cis_kubernetes": {
+      "benchmark_version": null,
+      "status": "topic_crosswalk_only; no control ID or compliance assertion"
+    }
+  }
+}

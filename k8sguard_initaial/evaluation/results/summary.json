@@ -1,0 +1,29 @@
+{
+  "generated_at_utc": "2026-10-13T21:51:39.387676+00:00",
+  "source": "local deterministic bundled fixtures",
+  "note": "Counts describe detected results on these fixtures; they are NOT accuracy, coverage or Kubescape superiority metrics.",
+  "fixtures": [
+    {
+      "fixture": "insecure.yaml",
+      "resources": 4,
+      "nodes": 7,
+      "edges": 7,
+      "findings": 9,
+      "capability_paths": 3,
+      "conditional_transitions": 3,
+      "operator_references": 0,
+      "cis_aligned_checks": 6
+    },
+    {
+      "fixture": "operator_and_paths.yaml",
+      "resources": 7,
+      "nodes": 10,
+      "edges": 6,
+      "findings": 5,
+      "capability_paths": 1,
+      "conditional_transitions": 1,
+      "operator_references": 1,
+      "cis_aligned_checks": 6
+    }
+  ]
+}

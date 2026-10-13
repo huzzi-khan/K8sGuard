@@ -20,3 +20,5 @@ and verify repository commits before mid-evaluation claims.
 - Assistant implemented frontend interactive attack graph from Stage 7 scanner JSON in `frontend/src/AttackGraph.jsx`, `frontend/src/attack-graph.scss`, updated `frontend/src/main.jsx`.
 - Node/edge selection, search, kind filter, path highlighting, pan/zoom, evidence inspector; no fabricated data.
 - `python -m pytest tests -q`: 30 passed. Frontend `npm install` timed out and frontend build is **not verified** in this environment; verify locally before evaluation.
+
+- 2026-10-13, ChatGPT: added HTTP API integration and CORS tests, offline fixture evidence exporter, Kubescape comparison protocol and mid-evaluation evidence checklist. Scanner algorithms unchanged in this increment. User should verify frontend build and any live-cluster claims locally.
