@@ -88,6 +88,6 @@ def analyze(docs: list[dict[str, Any]]) -> dict[str, Any]:
             "findings": findings, "attack_paths": attack_paths, "operator_references": reference_links, "network_policies": network_policies,
             "limitations": ["Initial rules only: findings are capabilities, not proven exploit paths.",
                              "Offline RBAC only covers explicit ServiceAccount subjects and supplied roles; unresolved references are returned.",
-                             "NetworkPolicy inventory is implemented, but full selector-based network reachability is not; attack paths are capability paths, not demonstrated exploits.",
+                             "NetworkPolicy selectors are evaluated for supplied Pod objects only; effective traffic reachability is not computed; attack paths are capabilities, not demonstrated exploits.",
                              "Operator references use a finite set of known field names and only confirm targets present in the supplied snapshot.",
                              "Live Kubernetes collection and unrestricted schema-agnostic CRD discovery are not implemented.",]})

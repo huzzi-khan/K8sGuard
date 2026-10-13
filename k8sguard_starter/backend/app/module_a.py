@@ -89,8 +89,32 @@ def inspect_operator_references(docs: list[dict], g: nx.DiGraph, fs: list[dict])
             walk(o.get('spec') or {},'spec')
     return links
 
+def _matches(labels: dict, selector: dict) -> bool:
+    """Evaluate Kubernetes LabelSelector matchLabels and matchExpressions."""
+    if not isinstance(selector, dict):
+        return False
+    labels = labels or {}
+    if not all(labels.get(k) == v for k,v in (selector.get('matchLabels') or {}).items()):
+        return False
+    for expr in selector.get('matchExpressions') or []:
+        key=expr.get('key'); op=expr.get('operator'); values=expr.get('values') or []
+        exists=key in labels
+        if op == 'In': ok=exists and labels[key] in values
+        elif op == 'NotIn': ok=not exists or labels[key] not in values
+        elif op == 'Exists': ok=exists
+        elif op == 'DoesNotExist': ok=not exists
+        else: return False
+        if not ok: return False
+    return True
+
+
 def inspect_network_policies(docs: list[dict], fs: list[dict]) -> list[dict]:
-    """Inventory isolation semantics; no speculative allow edges without endpoint inventories."""
+    """Classify policy selection and isolation for supplied pod objects, not packet reachability.
+
+    Offline manifests lack complete namespace/pod/service inventories and CNI behavior.
+    A policy is isolation on its selected pods; allowed traffic is additive across policies.
+    """
+    pods=[o for o in docs if o['kind']=='Pod']
     policies=[]
     for o in docs:
         if o['kind'] != 'NetworkPolicy': continue
@@ -98,9 +122,12 @@ def inspect_network_policies(docs: list[dict], fs: list[dict]) -> list[dict]:
         if types is None:
             types=['Ingress'] + (['Egress'] if 'egress' in s else [])
         if not isinstance(types,list): types=[]
+        chosen=[oid(p) for p in pods if namespace(p)==namespace(o) and
+                _matches((p.get('metadata') or {}).get('labels') or {},s.get('podSelector') or {})]
         record={'resource':oid(o),'namespace':namespace(o),'pod_selector':s.get('podSelector') or {},
                 'policy_types':types,'ingress_rules':len(s.get('ingress') or []),
-                'egress_rules':len(s.get('egress') or [])}
+                'egress_rules':len(s.get('egress') or []),'selected_pods':chosen,
+                'coverage':'supplied_pod_objects_only','reachability':'not_computed'}
         policies.append(record)
         if 'Ingress' in types and not s.get('ingress'):
             add_finding(fs,'NETPOL_DENY_INGRESS','info',oid(o),'Policy denies ingress to selected pods',record,'network')
