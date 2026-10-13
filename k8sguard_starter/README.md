@@ -66,3 +66,25 @@ inventory reconciliation are not fully supported. A RoleBinding to a ClusterRole
 is scoped to the binding namespace, not the entire cluster. The scanner does not
 apply manifests or modify RBAC. NetworkPolicy and CRD graph expansion remain
 future work. Do not present Module A as complete in this iteration.
+
+## Extended Module A (mid-eval iteration)
+
+Use `fixtures/operator_and_paths.yaml` to demonstrate a Deployment's ServiceAccount access through a RoleBinding, a resolved cert-manager ClusterIssuer reference, a pod security warning, and an ingress-deny NetworkPolicy inventory entry.
+
+- `attack_paths` represents **capability/authorization graph paths**, **not proven exploit chains**.
+- `operator_references` resolves recognized reference-field names only against objects supplied in the scan. Missing targets remain `unresolved`.
+- `network_policies` inventories selected policy direction/rule counts but **does not compute network reachability**.
+- Live-cluster discovery and full generalized CRD resolution remain incomplete; do not present this as fully complete Module A.
+
+Run tests: `cd backend && python -m pytest tests -q` (or set `PYTHONPATH=backend` from project root).
+
+For a fresh Git repository, copy **the contents** of this folder into the repository root, not the folder itself. Never overwrite your `.git/` directory or local `.env` files. Commit and push only after reviewing `git status`.
+
+
+## Stage 4: MITRE ATT&CK / CIS crosswalk
+
+The scan result now provides `mitre_attack` and `cis_kubernetes` entries on findings and candidate capability paths. MITRE references describe *potential enabling conditions*, not observed attacks. Technique-reference graph edges are marked `semantic_only: true` and **must not be traversed as attacker movement edges**.
+
+CIS Kubernetes Benchmark mappings are **topics**, without numbered controls or compliance scores. Before claiming control-level compliance, select a published CIS Kubernetes Benchmark version compatible with the evaluated Kubernetes distribution/version and verify each rule against that source.
+
+Next engineering milestones: selector-aware NetworkPolicy reachability, genuinely multi-hop validated graph rules, generalized CRD discovery, read-only live cluster ingestion, interactive graph visualization, and Kubescape baseline evaluation. Do not describe these as completed.

@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata: {name: scanning-bot, namespace: app-ns}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata: {name: secrets-reader, namespace: app-ns}
+rules:
+  - apiGroups: ['']
+    resources: [secrets]
+    verbs: [get, list]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata: {name: secret-access, namespace: app-ns}
+roleRef: {apiGroup: rbac.authorization.k8s.io, kind: Role, name: secrets-reader}
+subjects:
+  - {kind: ServiceAccount, name: scanning-bot, namespace: app-ns}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: data-service, namespace: app-ns}
+spec:
+  template:
+    spec:
+      serviceAccountName: scanning-bot
+      containers: [{name: app, image: nginx, securityContext: {allowPrivilegeEscalation: true}}]
+---
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata: {name: org-issuer}
+spec: {selfSigned: {}}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata: {name: service-tls, namespace: app-ns}
+spec:
+  secretName: app-tls
+  issuerRef: {name: org-issuer, kind: ClusterIssuer}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: lock-ingress, namespace: app-ns}
+spec:
+  podSelector: {}
+  policyTypes: [Ingress]
+  ingress: []
