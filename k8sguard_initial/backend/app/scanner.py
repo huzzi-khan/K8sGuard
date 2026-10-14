@@ -4,6 +4,7 @@ from collections import defaultdict
 from typing import Any
 import networkx as nx
 import yaml
+from .graph_layout import positions
 from .rbac import collect_effective_access, grant_findings
 from .attack_engine import capability_transitions
 from .cis_checks import evaluate_static_controls
@@ -89,7 +90,7 @@ def analyze(docs: list[dict[str, Any]]) -> dict[str, Any]:
     attack_paths = derive_attack_paths(effective_permissions, docs, g)
     transitions = capability_transitions(docs, effective_permissions, g)
     cis_checks = evaluate_static_controls(docs)
-    return annotate({"effective_permissions": effective_permissions, "unresolved_references": unresolved, "resources": len(docs), "nodes": [{"id": n, **attrs} for n, attrs in g.nodes(data=True)],
+    result = annotate({"effective_permissions": effective_permissions, "unresolved_references": unresolved, "resources": len(docs), "nodes": [{"id": n, **attrs} for n, attrs in g.nodes(data=True)],
             "edges": [{"source": u, "target": v, **attrs} for u, v, attrs in g.edges(data=True)],
             "findings": findings, "attack_paths": attack_paths, "attack_transitions": transitions, "cis_checks": cis_checks, "operator_references": reference_links, "network_policies": network_policies, "network_flows": network_flows,
             "limitations": ["Initial rules only: findings are capabilities, not proven exploit paths.",
@@ -99,3 +100,5 @@ def analyze(docs: list[dict[str, Any]]) -> dict[str, Any]:
                              "Live Kubernetes collection and unrestricted schema-agnostic CRD discovery are not implemented.",
                              "CIS-aligned local checks are not official benchmark control audits; missing values are unknown, not pass.",
                              "Conditional attack transitions assume an attacker foothold and usable credentials; they do not prove exploitation.",]})
+    result["graph_layout"] = positions(result["nodes"], result["edges"])
+    return result

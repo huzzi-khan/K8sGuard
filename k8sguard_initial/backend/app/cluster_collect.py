@@ -9,6 +9,32 @@ import json
 from pathlib import Path
 
 
+RESOURCE_TYPES = {
+    'pods': ('Pod', 'v1'),
+    'namespaces': ('Namespace', 'v1'),
+    'serviceaccounts': ('ServiceAccount', 'v1'),
+    'deployments': ('Deployment', 'apps/v1'),
+    'daemonsets': ('DaemonSet', 'apps/v1'),
+    'statefulsets': ('StatefulSet', 'apps/v1'),
+    'jobs': ('Job', 'batch/v1'),
+    'cronjobs': ('CronJob', 'batch/v1'),
+    'roles': ('Role', 'rbac.authorization.k8s.io/v1'),
+    'clusterroles': ('ClusterRole', 'rbac.authorization.k8s.io/v1'),
+    'rolebindings': ('RoleBinding', 'rbac.authorization.k8s.io/v1'),
+    'clusterrolebindings': ('ClusterRoleBinding', 'rbac.authorization.k8s.io/v1'),
+    'networkpolicies': ('NetworkPolicy', 'networking.k8s.io/v1'),
+}
+
+
+def normalize_resource(item: dict, collection: str) -> dict:
+    """Restore Kubernetes type metadata often absent from list items."""
+    kind, api_version = RESOURCE_TYPES[collection]
+    normalized = dict(item)
+    normalized.setdefault('kind', kind)
+    normalized.setdefault('apiVersion', api_version)
+    return normalized
+
+
 def collect_snapshot(context: str | None = None) -> tuple[list[dict], list[str]]:
     try:
         from kubernetes import client, config
@@ -42,15 +68,8 @@ def collect_snapshot(context: str | None = None) -> tuple[list[dict], list[str]]
             response=call(_request_timeout=20)
             obj=api.sanitize_for_serialization(response)
             for item in obj.get('items',[]):
-                if isinstance(item,dict) and all(k in item for k in ('kind','metadata','apiVersion')):
-                    resources.append(item)
-                elif isinstance(item,dict):
-                    kind_map={'pods':'Pod','namespaces':'Namespace','serviceaccounts':'ServiceAccount','deployments':'Deployment',
-                    'daemonsets':'DaemonSet','statefulsets':'StatefulSet','jobs':'Job','cronjobs':'CronJob','roles':'Role',
-                    'clusterroles':'ClusterRole','rolebindings':'RoleBinding','clusterrolebindings':'ClusterRoleBinding',
-                    'networkpolicies':'NetworkPolicy'}
-                    item['kind']=kind_map[name];item['apiVersion']='v1' if name in ('pods','namespaces','serviceaccounts') else 'apps/v1'
-                    resources.append(item)
+                if isinstance(item, dict):
+                    resources.append(normalize_resource(item, name))
         except Exception as exc:
             errors.append(f'{name}: {type(exc).__name__}: {exc}')
     return resources,errors
