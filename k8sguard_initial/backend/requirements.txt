@@ -7,4 +7,5 @@ pydantic>=2,<3
 pytest>=8,<10
 httpx>=0.27,<1
 kubernetes>=29,<36
+
 numpy>=1.26,<3
