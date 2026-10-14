@@ -1,0 +1,475 @@
+{
+  "effective_permissions": [
+    {
+      "subject": "ServiceAccount/app-ns/scanning-bot",
+      "binding": "RoleBinding/app-ns/secret-access",
+      "role": "Role/app-ns/secrets-reader",
+      "apiGroups": [
+        ""
+      ],
+      "resources": [
+        "secrets"
+      ],
+      "verbs": [
+        "get",
+        "list"
+      ],
+      "resourceNames": [],
+      "nonResourceURLs": [],
+      "scope": "app-ns"
+    }
+  ],
+  "unresolved_references": [],
+  "resources": 7,
+  "nodes": [
+    {
+      "id": "ServiceAccount/app-ns/scanning-bot",
+      "label": "scanning-bot",
+      "kind": "ServiceAccount",
+      "namespace": "app-ns"
+    },
+    {
+      "id": "Role/app-ns/secrets-reader",
+      "label": "secrets-reader",
+      "kind": "Role",
+      "namespace": "app-ns"
+    },
+    {
+      "id": "RoleBinding/app-ns/secret-access",
+      "label": "secret-access",
+      "kind": "RoleBinding",
+      "namespace": "app-ns"
+    },
+    {
+      "id": "Deployment/app-ns/data-service",
+      "label": "data-service",
+      "kind": "Deployment",
+      "namespace": "app-ns"
+    },
+    {
+      "id": "ClusterIssuer/default/org-issuer",
+      "label": "org-issuer",
+      "kind": "ClusterIssuer",
+      "namespace": "default"
+    },
+    {
+      "id": "Certificate/app-ns/service-tls",
+      "label": "service-tls",
+      "kind": "Certificate",
+      "namespace": "app-ns"
+    },
+    {
+      "id": "NetworkPolicy/app-ns/lock-ingress",
+      "label": "lock-ingress",
+      "kind": "NetworkPolicy",
+      "namespace": "app-ns"
+    },
+    {
+      "id": "ClusterIssuer/cluster/org-issuer"
+    },
+    {
+      "id": "MITRE/T1078",
+      "kind": "MitreTechnique",
+      "label": "T1078: Valid Accounts",
+      "namespace": "framework"
+    },
+    {
+      "id": "MITRE/T1611",
+      "kind": "MitreTechnique",
+      "label": "T1611: Escape to Host",
+      "namespace": "framework"
+    }
+  ],
+  "edges": [
+    {
+      "source": "ServiceAccount/app-ns/scanning-bot",
+      "target": "RoleBinding/app-ns/secret-access",
+      "relation": "bound_by"
+    },
+    {
+      "source": "RoleBinding/app-ns/secret-access",
+      "target": "Role/app-ns/secrets-reader",
+      "relation": "grants_role"
+    },
+    {
+      "source": "Deployment/app-ns/data-service",
+      "target": "ServiceAccount/app-ns/scanning-bot",
+      "relation": "uses_service_account"
+    },
+    {
+      "source": "Certificate/app-ns/service-tls",
+      "target": "ClusterIssuer/cluster/org-issuer",
+      "relation": "operator_reference",
+      "field": "spec.issuerRef",
+      "cross_namespace": true,
+      "confidence": "verified_object_reference"
+    },
+    {
+      "source": "Role/app-ns/secrets-reader",
+      "target": "MITRE/T1078",
+      "relation": "potential_attack_technique",
+      "finding_id": "F-001",
+      "semantic_only": true
+    },
+    {
+      "source": "Deployment/app-ns/data-service",
+      "target": "MITRE/T1611",
+      "relation": "potential_attack_technique",
+      "finding_id": "A-0003",
+      "semantic_only": true
+    }
+  ],
+  "findings": [
+    {
+      "id": "F-001",
+      "rule": "RBAC_SECRET_READ",
+      "severity": "high",
+      "resource": "Role/app-ns/secrets-reader",
+      "description": "Role can read Kubernetes Secrets",
+      "evidence": {
+        "kind": "Role",
+        "name": "secrets-reader"
+      },
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "topic": "RBAC least privilege / secrets access",
+          "benchmark_version": null,
+          "control_id": null,
+          "status": "candidate_mapping_requires_versioned_review"
+        }
+      ]
+    },
+    {
+      "id": "RB-001",
+      "rule": "EFFECTIVE_SECRET_READ",
+      "severity": "high",
+      "resource": "ServiceAccount/app-ns/scanning-bot",
+      "description": "ServiceAccount can read Secrets in the indicated scope",
+      "evidence": {
+        "binding": "RoleBinding/app-ns/secret-access",
+        "role": "Role/app-ns/secrets-reader",
+        "scope": "app-ns",
+        "apiGroups": [
+          ""
+        ],
+        "resources": [
+          "secrets"
+        ],
+        "verbs": [
+          "get",
+          "list"
+        ],
+        "resourceNames": []
+      },
+      "mitre_attack": [],
+      "cis_kubernetes": []
+    },
+    {
+      "id": "A-0003",
+      "rule": "PRIVILEGE_ESCALATION_ALLOWED",
+      "severity": "high",
+      "resource": "Deployment/app-ns/data-service",
+      "description": "app explicitly allows privilege escalation",
+      "evidence": {
+        "container": "app"
+      },
+      "category": "capability",
+      "mitre_attack": [
+        {
+          "technique_id": "T1611",
+          "name": "Escape to Host",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1611/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "topic": "Pod/container privilege restrictions",
+          "benchmark_version": null,
+          "control_id": null,
+          "status": "candidate_mapping_requires_versioned_review"
+        }
+      ]
+    },
+    {
+      "id": "A-0004",
+      "rule": "CROSS_SCOPE_OPERATOR_REFERENCE",
+      "severity": "medium",
+      "resource": "Certificate/app-ns/service-tls",
+      "description": "Custom resource references a resource in another scope",
+      "evidence": {
+        "source": "Certificate/app-ns/service-tls",
+        "reference_field": "spec.issuerRef",
+        "kind": "ClusterIssuer",
+        "name": "org-issuer",
+        "target": "ClusterIssuer/cluster/org-issuer",
+        "status": "resolved",
+        "cross_scope": true
+      },
+      "category": "reference",
+      "mitre_attack": [],
+      "cis_kubernetes": [
+        {
+          "topic": "Cross-scope custom resource review",
+          "benchmark_version": null,
+          "control_id": null,
+          "status": "candidate_mapping_requires_versioned_review"
+        }
+      ]
+    },
+    {
+      "id": "A-0005",
+      "rule": "NETPOL_DENY_INGRESS",
+      "severity": "info",
+      "resource": "NetworkPolicy/app-ns/lock-ingress",
+      "description": "Policy denies ingress to selected pods",
+      "evidence": {
+        "resource": "NetworkPolicy/app-ns/lock-ingress",
+        "namespace": "app-ns",
+        "pod_selector": {},
+        "policy_types": [
+          "Ingress"
+        ],
+        "ingress_rules": 0,
+        "egress_rules": 0,
+        "selected_pods": [],
+        "coverage": "supplied_pod_objects_only",
+        "reachability": "not_computed"
+      },
+      "category": "network",
+      "mitre_attack": [],
+      "cis_kubernetes": [
+        {
+          "topic": "NetworkPolicy segmentation",
+          "benchmark_version": null,
+          "control_id": null,
+          "status": "candidate_mapping_requires_versioned_review"
+        }
+      ]
+    }
+  ],
+  "attack_paths": [
+    {
+      "id": "P-001",
+      "rule": "SECRET_READ_CAPABILITY",
+      "severity": "high",
+      "nodes": [
+        "Deployment/app-ns/data-service",
+        "ServiceAccount/app-ns/scanning-bot",
+        "RoleBinding/app-ns/secret-access",
+        "Role/app-ns/secrets-reader"
+      ],
+      "scope": "app-ns",
+      "classification": "capability_path",
+      "description": "Read access to secrets can expose credentials",
+      "evidence": {
+        "verbs": [
+          "get",
+          "list"
+        ],
+        "resources": [
+          "secrets"
+        ]
+      },
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "topic": "RBAC least privilege / secrets access",
+          "benchmark_version": null,
+          "control_id": null,
+          "status": "candidate_mapping_requires_versioned_review"
+        }
+      ]
+    }
+  ],
+  "attack_transitions": [
+    {
+      "id": "T-001",
+      "rule": "POTENTIAL_SECRET_ACCESS",
+      "severity": "high",
+      "classification": "conditional_attack_transition",
+      "nodes": [
+        "Deployment/app-ns/data-service",
+        "ServiceAccount/app-ns/scanning-bot",
+        "RoleBinding/app-ns/secret-access",
+        "Role/app-ns/secrets-reader"
+      ],
+      "initial_state": "Assumed code execution in Deployment/app-ns/data-service",
+      "possible_effect": "Kubernetes API read of Secret objects",
+      "preconditions": [
+        "Hypothetical attacker code execution in the workload",
+        "Usable API credentials for the workload ServiceAccount",
+        "API server reachable and authorization rules applicable",
+        "Target Secret exists within the grant scope and meets resourceNames restrictions"
+      ],
+      "credential_mount": "not_explicitly_disabled",
+      "scope": "app-ns",
+      "mitre_technique": "T1078",
+      "evidence": {
+        "binding": "RoleBinding/app-ns/secret-access",
+        "role": "Role/app-ns/secrets-reader",
+        "verbs": [
+          "get",
+          "list"
+        ],
+        "resources": [
+          "secrets"
+        ],
+        "resourceNames": []
+      },
+      "confidence": "conditional; not an observed compromise"
+    }
+  ],
+  "cis_checks": [
+    {
+      "rule_id": "K8SG-CIS-PRIVILEGED",
+      "resource": "Deployment/app-ns/data-service",
+      "container": "app",
+      "status": "unknown",
+      "evidence": {
+        "field": "securityContext.privileged",
+        "value": null
+      },
+      "benchmark": "CIS Kubernetes Benchmark",
+      "benchmark_version": null,
+      "cis_control_id": null,
+      "assessment_type": "cis_aligned_local_check_not_compliance"
+    },
+    {
+      "rule_id": "K8SG-CIS-ESCALATION",
+      "resource": "Deployment/app-ns/data-service",
+      "container": "app",
+      "status": "fail",
+      "evidence": {
+        "field": "securityContext.allowPrivilegeEscalation",
+        "value": true
+      },
+      "benchmark": "CIS Kubernetes Benchmark",
+      "benchmark_version": null,
+      "cis_control_id": null,
+      "assessment_type": "cis_aligned_local_check_not_compliance"
+    },
+    {
+      "rule_id": "K8SG-CIS-ROOTFS",
+      "resource": "Deployment/app-ns/data-service",
+      "container": "app",
+      "status": "unknown",
+      "evidence": {
+        "field": "securityContext.readOnlyRootFilesystem",
+        "value": null
+      },
+      "benchmark": "CIS Kubernetes Benchmark",
+      "benchmark_version": null,
+      "cis_control_id": null,
+      "assessment_type": "cis_aligned_local_check_not_compliance"
+    },
+    {
+      "rule_id": "K8SG-CIS-HOSTNETWORK",
+      "resource": "Deployment/app-ns/data-service",
+      "status": "unknown",
+      "evidence": {
+        "field": "spec.hostNetwork",
+        "value": null
+      },
+      "benchmark": "CIS Kubernetes Benchmark",
+      "benchmark_version": null,
+      "cis_control_id": null,
+      "assessment_type": "cis_aligned_local_check_not_compliance"
+    },
+    {
+      "rule_id": "K8SG-CIS-HOSTPID",
+      "resource": "Deployment/app-ns/data-service",
+      "status": "unknown",
+      "evidence": {
+        "field": "spec.hostPID",
+        "value": null
+      },
+      "benchmark": "CIS Kubernetes Benchmark",
+      "benchmark_version": null,
+      "cis_control_id": null,
+      "assessment_type": "cis_aligned_local_check_not_compliance"
+    },
+    {
+      "rule_id": "K8SG-CIS-HOSTIPC",
+      "resource": "Deployment/app-ns/data-service",
+      "status": "unknown",
+      "evidence": {
+        "field": "spec.hostIPC",
+        "value": null
+      },
+      "benchmark": "CIS Kubernetes Benchmark",
+      "benchmark_version": null,
+      "cis_control_id": null,
+      "assessment_type": "cis_aligned_local_check_not_compliance"
+    }
+  ],
+  "operator_references": [
+    {
+      "source": "Certificate/app-ns/service-tls",
+      "reference_field": "spec.issuerRef",
+      "kind": "ClusterIssuer",
+      "name": "org-issuer",
+      "target": "ClusterIssuer/cluster/org-issuer",
+      "status": "resolved",
+      "cross_scope": true
+    }
+  ],
+  "network_policies": [
+    {
+      "resource": "NetworkPolicy/app-ns/lock-ingress",
+      "namespace": "app-ns",
+      "pod_selector": {},
+      "policy_types": [
+        "Ingress"
+      ],
+      "ingress_rules": 0,
+      "egress_rules": 0,
+      "selected_pods": [],
+      "coverage": "supplied_pod_objects_only",
+      "reachability": "not_computed"
+    }
+  ],
+  "network_flows": [],
+  "limitations": [
+    "Initial rules only: findings are capabilities, not proven exploit paths.",
+    "Offline RBAC only covers explicit ServiceAccount subjects and supplied roles; unresolved references are returned.",
+    "Pod-to-pod TCP policy allowance is evaluated for supplied Pods and ports 80/443 only; this does not establish actual connectivity, CNI enforcement or live-cluster reachability.",
+    "Operator references use a finite set of known field names and only confirm targets present in the supplied snapshot.",
+    "Live Kubernetes collection and unrestricted schema-agnostic CRD discovery are not implemented.",
+    "CIS-aligned local checks are not official benchmark control audits; missing values are unknown, not pass.",
+    "Conditional attack transitions assume an attacker foothold and usable credentials; they do not prove exploitation.",
+    "MITRE edges indicate potential enabling conditions, not observed attacker behavior or confirmed exploit chains.",
+    "CIS topics are indicative only; choose a benchmark version and verify exact control IDs before claiming compliance."
+  ],
+  "frameworks": {
+    "mitre_attack": {
+      "matrix": "Enterprise ATT&CK / Containers",
+      "techniques_used": [
+        "T1078",
+        "T1611"
+      ]
+    },
+    "cis_kubernetes": {
+      "benchmark_version": null,
+      "status": "topic_crosswalk_only; no control ID or compliance assertion"
+    }
+  }
+}
