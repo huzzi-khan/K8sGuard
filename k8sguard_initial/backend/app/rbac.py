@@ -6,6 +6,7 @@ reported as unresolved, not interpreted as no access in the live cluster.
 from __future__ import annotations
 from typing import Any
 import networkx as nx
+from .rbac_rule_semantics import indicators_for_rule
 
 
 def ns(obj: dict) -> str:
@@ -112,18 +113,22 @@ def grant_findings(grants: list[dict]) -> list[dict]:
     findings = []
     seen = set()
     for grant in grants:
-        resources, verbs = set(grant['resources']), set(grant['verbs'])
-        read = bool(verbs & {'get', 'list', 'watch', '*'})
-        write = bool(verbs & {'create', 'update', 'patch', 'delete', '*'})
+        indicators = indicators_for_rule(grant)
         rules = []
-        if '*' in verbs or '*' in resources or '*' in grant['apiGroups']:
+        if 'RBAC_WILDCARD_PERMISSION' in indicators:
             rules.append(('EFFECTIVE_RBAC_WILDCARD', 'high', 'Binding grants wildcard permissions'))
-        if ('secrets' in resources or '*' in resources) and read and not grant['resourceNames']:
+        if 'RBAC_SECRET_READ_PERMISSION' in indicators:
             rules.append(('EFFECTIVE_SECRET_READ', 'high', 'ServiceAccount can read Secrets in the indicated scope'))
-        if (resources & {'roles', 'clusterroles', 'rolebindings', 'clusterrolebindings', '*'}) and write:
+        if 'RBAC_ACCESS_CONTROL_MUTATION_PERMISSION' in indicators:
             rules.append(('EFFECTIVE_RBAC_MUTATION', 'critical', 'ServiceAccount can modify access-control resources'))
-        if (resources & {'pods/exec', 'pods/attach', '*'}) and verbs & {'create', '*'}:
+        if 'RBAC_POD_EXEC_PERMISSION' in indicators:
             rules.append(('EFFECTIVE_POD_EXEC', 'high', 'ServiceAccount may initiate pod exec/attach requests'))
+        if 'RBAC_ESCALATE_PERMISSION' in indicators:
+            rules.append(('EFFECTIVE_RBAC_ESCALATE', 'critical', 'ServiceAccount has RBAC escalate authorization for Roles or ClusterRoles'))
+        if 'RBAC_BIND_PERMISSION' in indicators:
+            rules.append(('EFFECTIVE_RBAC_BIND', 'critical', 'ServiceAccount has RBAC bind authorization for Roles or ClusterRoles'))
+        if 'RBAC_IMPERSONATE_PERMISSION' in indicators:
+            rules.append(('EFFECTIVE_RBAC_IMPERSONATE', 'critical', 'ServiceAccount has identity impersonation authorization'))
         for rule, sev, description in rules:
             key = (grant['subject'], grant['binding'], rule, str(grant['resources']), str(grant['verbs']))
             if key in seen:

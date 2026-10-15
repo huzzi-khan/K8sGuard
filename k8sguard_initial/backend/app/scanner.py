@@ -6,9 +6,12 @@ import networkx as nx
 import yaml
 from .graph_layout import positions
 from .rbac import collect_effective_access, grant_findings
+from .rbac_rule_semantics import indicators_for_rule
+from .rbac_grant_assessment import permission_records
 from .attack_engine import capability_transitions
 from .cis_checks import evaluate_static_controls
 from .frameworks import annotate
+from .security_assessment import assess_graph
 from .network_reachability import evaluate_flows
 from .module_a import inspect_workloads, inspect_operator_references, inspect_network_policies, derive_attack_paths
 
@@ -53,12 +56,11 @@ def analyze(docs: list[dict[str, Any]]) -> dict[str, Any]:
         kind = o["kind"]
         if kind in ("Role", "ClusterRole"):
             for rule in o.get("rules") or []:
-                verbs = rule.get("verbs") or []
-                resources = rule.get("resources") or []
-                if "*" in verbs or "*" in resources:
-                    add_finding("RBAC_WILDCARD", "high", o, "Role grants wildcard API verbs or resources")
-                if "secrets" in resources and any(v in verbs for v in ("get", "list", "watch", "*")):
-                    add_finding("RBAC_SECRET_READ", "high", o, "Role can read Kubernetes Secrets")
+                indicators = indicators_for_rule(rule)
+                if 'RBAC_WILDCARD_PERMISSION' in indicators:
+                    add_finding("RBAC_WILDCARD", "high", o, "Role declares wildcard API verbs, resources, or API groups")
+                if 'RBAC_SECRET_READ_PERMISSION' in indicators:
+                    add_finding("RBAC_SECRET_READ", "high", o, "Role declares broad access to core Kubernetes Secrets")
         if kind in ("Pod", "Deployment", "DaemonSet", "StatefulSet", "Job", "CronJob"):
             spec = o.get("spec") or {}
             if kind == "CronJob": spec = (((spec.get("jobTemplate") or {}).get("spec") or {}).get("template") or {}).get("spec") or {}
@@ -82,6 +84,7 @@ def analyze(docs: list[dict[str, Any]]) -> dict[str, Any]:
                 g.add_node(sub_id, kind=subject.get("kind", "Unknown"), label=subject.get("name", "unknown"))
                 g.add_edge(sub_id, node, relation="bound_by")
     effective_permissions, unresolved = collect_effective_access(docs, g)
+    permission_grants = permission_records(effective_permissions)
     findings.extend(grant_findings(effective_permissions))
     inspect_workloads(docs, g, findings)
     reference_links = inspect_operator_references(docs, g, findings)
@@ -90,7 +93,7 @@ def analyze(docs: list[dict[str, Any]]) -> dict[str, Any]:
     attack_paths = derive_attack_paths(effective_permissions, docs, g)
     transitions = capability_transitions(docs, effective_permissions, g)
     cis_checks = evaluate_static_controls(docs)
-    result = annotate({"effective_permissions": effective_permissions, "unresolved_references": unresolved, "resources": len(docs), "nodes": [{"id": n, **attrs} for n, attrs in g.nodes(data=True)],
+    result = annotate({"effective_permissions": effective_permissions, "permission_grants": permission_grants, "unresolved_references": unresolved, "resources": len(docs), "nodes": [{"id": n, **attrs} for n, attrs in g.nodes(data=True)],
             "edges": [{"source": u, "target": v, **attrs} for u, v, attrs in g.edges(data=True)],
             "findings": findings, "attack_paths": attack_paths, "attack_transitions": transitions, "cis_checks": cis_checks, "operator_references": reference_links, "network_policies": network_policies, "network_flows": network_flows,
             "limitations": ["Initial rules only: findings are capabilities, not proven exploit paths.",
@@ -100,5 +103,6 @@ def analyze(docs: list[dict[str, Any]]) -> dict[str, Any]:
                              "Live Kubernetes collection and unrestricted schema-agnostic CRD discovery are not implemented.",
                              "CIS-aligned local checks are not official benchmark control audits; missing values are unknown, not pass.",
                              "Conditional attack transitions assume an attacker foothold and usable credentials; they do not prove exploitation.",]})
+    result = assess_graph(result)
     result["graph_layout"] = positions(result["nodes"], result["edges"])
     return result

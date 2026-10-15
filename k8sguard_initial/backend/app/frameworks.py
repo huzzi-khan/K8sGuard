@@ -5,6 +5,7 @@ This crosswalk deliberately uses stable topic names until a benchmark version is
 selected and rule-by-rule requirements have been independently verified.
 """
 from __future__ import annotations
+from .cis_catalogue import RULE_TOPICS, candidate, CURRENT_EDITION
 
 MITRE = {
     'T1609': {'name': 'Container Administration Command', 'tactic': 'Execution'},
@@ -16,6 +17,15 @@ MITRE = {
 
 # Each link is a potential enabling condition, not proof the technique occurred.
 RULES = {
+    # Effective permissions are resolved through a ServiceAccount and a binding;
+    # mapping is a possible enabling condition, never observed ATT&CK activity.
+    'EFFECTIVE_RBAC_WILDCARD': (['T1078'], ['RBAC least privilege']),
+    'EFFECTIVE_SECRET_READ': (['T1078'], ['RBAC least privilege / secrets access']),
+    'EFFECTIVE_RBAC_MUTATION': (['T1078'], ['RBAC least privilege']),
+    'EFFECTIVE_POD_EXEC': (['T1609'], ['RBAC least privilege']),
+    'EFFECTIVE_RBAC_ESCALATE': (['T1078'], ['RBAC least privilege / special escalate verb']),
+    'EFFECTIVE_RBAC_BIND': (['T1078'], ['RBAC least privilege / special bind verb']),
+    'EFFECTIVE_RBAC_IMPERSONATE': (['T1078'], ['RBAC identity impersonation']),
     'RBAC_WILDCARD': (['T1078'], ['RBAC least privilege']),
     'RBAC_SECRET_READ': (['T1078'], ['RBAC least privilege / secrets access']),
     'SECRET_READ_CAPABILITY': (['T1078'], ['RBAC least privilege / secrets access']),
@@ -39,8 +49,9 @@ def tag(rule: str) -> dict:
     return {
         'mitre_attack': [{'technique_id': t, **MITRE[t], 'relationship': 'potential_enabler',
                           'url': f'https://attack.mitre.org/techniques/{t}/'} for t in ids],
-        'cis_kubernetes': [{'topic': x, 'benchmark_version': None, 'control_id': None,
-                            'status': 'candidate_mapping_requires_versioned_review'} for x in topics],
+        'cis_kubernetes': ([candidate(RULE_TOPICS[rule])] if rule in RULE_TOPICS else
+                           [{'topic': x, 'benchmark_version': None, 'control_id': None,
+                             'status': 'candidate_mapping_requires_versioned_review'} for x in topics]),
     }
 
 def annotate(result: dict) -> dict:
@@ -60,7 +71,7 @@ def annotate(result: dict) -> dict:
                                     'relation': 'potential_attack_technique', 'finding_id': item['id'],
                                     'semantic_only': True})
     result['frameworks'] = {'mitre_attack': {'matrix': 'Enterprise ATT&CK / Containers', 'techniques_used': sorted(used)},
-                            'cis_kubernetes': {'benchmark_version': None,
+                            'cis_kubernetes': {'benchmark_version': None, 'latest_upstream_edition': CURRENT_EDITION,
                                                'status': 'topic_crosswalk_only; no control ID or compliance assertion'}}
     result['limitations'].append('MITRE edges indicate potential enabling conditions, not observed attacker behavior or confirmed exploit chains.')
     result['limitations'].append('CIS topics are indicative only; choose a benchmark version and verify exact control IDs before claiming compliance.')
