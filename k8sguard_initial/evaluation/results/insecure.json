@@ -36,6 +36,59 @@
       "scope": "demo"
     }
   ],
+  "permission_grants": [
+    {
+      "subject": "ServiceAccount/demo/scanner",
+      "binding": "RoleBinding/demo/grant-excessive",
+      "role": "Role/demo/excessive",
+      "scope": "demo",
+      "api_group": "",
+      "resource": "secrets",
+      "verb": "get",
+      "resource_names": [],
+      "grant_id": "PG-069ed3724739f229",
+      "indicators": [
+        "RBAC_SECRET_READ_PERMISSION"
+      ],
+      "risk_state": "risk",
+      "interpretation": "Static declared authorization, subject to admission and runtime prerequisites."
+    },
+    {
+      "subject": "ServiceAccount/demo/scanner",
+      "binding": "RoleBinding/demo/grant-excessive",
+      "role": "Role/demo/excessive",
+      "scope": "demo",
+      "api_group": "",
+      "resource": "*",
+      "verb": "*",
+      "resource_names": [],
+      "grant_id": "PG-c4cf41388b4988cf",
+      "indicators": [
+        "RBAC_WILDCARD_PERMISSION",
+        "RBAC_SECRET_READ_PERMISSION",
+        "RBAC_POD_EXEC_PERMISSION",
+        "RBAC_IMPERSONATE_PERMISSION"
+      ],
+      "risk_state": "risk",
+      "interpretation": "Static declared authorization, subject to admission and runtime prerequisites."
+    },
+    {
+      "subject": "ServiceAccount/demo/scanner",
+      "binding": "RoleBinding/demo/grant-excessive",
+      "role": "Role/demo/excessive",
+      "scope": "demo",
+      "api_group": "",
+      "resource": "secrets",
+      "verb": "list",
+      "resource_names": [],
+      "grant_id": "PG-ea7fe459dbdbcf31",
+      "indicators": [
+        "RBAC_SECRET_READ_PERMISSION"
+      ],
+      "risk_state": "risk",
+      "interpretation": "Static declared authorization, subject to admission and runtime prerequisites."
+    }
+  ],
   "unresolved_references": [],
   "resources": 4,
   "nodes": [
@@ -43,88 +96,193 @@
       "id": "ServiceAccount/demo/scanner",
       "label": "scanner",
       "kind": "ServiceAccount",
-      "namespace": "demo"
+      "namespace": "demo",
+      "security_state": "risk",
+      "assessment_ids": [
+        "GA-0005",
+        "GA-0006",
+        "GA-0007",
+        "GA-0008",
+        "GA-0009"
+      ],
+      "highest_severity": "critical"
     },
     {
       "id": "Role/demo/excessive",
       "label": "excessive",
       "kind": "Role",
-      "namespace": "demo"
+      "namespace": "demo",
+      "security_state": "risk",
+      "assessment_ids": [
+        "GA-0001",
+        "GA-0002",
+        "GA-0003"
+      ],
+      "highest_severity": "high"
     },
     {
       "id": "RoleBinding/demo/grant-excessive",
       "label": "grant-excessive",
       "kind": "RoleBinding",
-      "namespace": "demo"
+      "namespace": "demo",
+      "security_state": "unassessed",
+      "assessment_ids": []
     },
     {
       "id": "Pod/demo/vulnerable-pod",
       "label": "vulnerable-pod",
       "kind": "Pod",
-      "namespace": "demo"
+      "namespace": "demo",
+      "security_state": "risk",
+      "assessment_ids": [
+        "GA-0004",
+        "GA-0010"
+      ],
+      "highest_severity": "critical"
     },
     {
       "id": "MITRE/T1078",
       "kind": "MitreTechnique",
       "label": "T1078: Valid Accounts",
-      "namespace": "framework"
+      "namespace": "framework",
+      "security_state": "unassessed",
+      "assessment_ids": []
     },
     {
       "id": "MITRE/T1609",
       "kind": "MitreTechnique",
       "label": "T1609: Container Administration Command",
-      "namespace": "framework"
+      "namespace": "framework",
+      "security_state": "unassessed",
+      "assessment_ids": []
     },
     {
       "id": "MITRE/T1611",
       "kind": "MitreTechnique",
       "label": "T1611: Escape to Host",
-      "namespace": "framework"
+      "namespace": "framework",
+      "security_state": "unassessed",
+      "assessment_ids": []
     }
   ],
   "edges": [
     {
       "source": "ServiceAccount/demo/scanner",
       "target": "RoleBinding/demo/grant-excessive",
-      "relation": "bound_by"
+      "relation": "bound_by",
+      "security_state": "unassessed",
+      "assessment_ids": []
     },
     {
       "source": "RoleBinding/demo/grant-excessive",
       "target": "Role/demo/excessive",
-      "relation": "grants_role"
+      "relation": "grants_role",
+      "security_state": "risk",
+      "assessment_ids": [
+        "GA-0005",
+        "GA-0006",
+        "GA-0007",
+        "GA-0008",
+        "GA-0009"
+      ],
+      "highest_severity": "critical"
     },
     {
       "source": "Pod/demo/vulnerable-pod",
       "target": "ServiceAccount/demo/scanner",
-      "relation": "uses_service_account"
+      "relation": "uses_service_account",
+      "security_state": "unassessed",
+      "assessment_ids": []
     },
     {
       "source": "Role/demo/excessive",
       "target": "MITRE/T1078",
       "relation": "potential_attack_technique",
       "finding_id": "F-001",
-      "semantic_only": true
+      "semantic_only": true,
+      "security_state": "unassessed",
+      "assessment_ids": []
     },
     {
       "source": "Role/demo/excessive",
       "target": "MITRE/T1078",
       "relation": "potential_attack_technique",
       "finding_id": "F-002",
-      "semantic_only": true
+      "semantic_only": true,
+      "security_state": "unassessed",
+      "assessment_ids": []
     },
     {
-      "source": "Pod/demo/vulnerable-pod",
-      "target": "MITRE/T1611",
+      "source": "Role/demo/excessive",
+      "target": "MITRE/T1078",
       "relation": "potential_attack_technique",
       "finding_id": "F-003",
-      "semantic_only": true
+      "semantic_only": true,
+      "security_state": "unassessed",
+      "assessment_ids": []
     },
     {
       "source": "Pod/demo/vulnerable-pod",
       "target": "MITRE/T1611",
       "relation": "potential_attack_technique",
-      "finding_id": "A-0009",
-      "semantic_only": true
+      "finding_id": "F-004",
+      "semantic_only": true,
+      "security_state": "unassessed",
+      "assessment_ids": []
+    },
+    {
+      "source": "ServiceAccount/demo/scanner",
+      "target": "MITRE/T1078",
+      "relation": "potential_attack_technique",
+      "finding_id": "RB-001",
+      "semantic_only": true,
+      "security_state": "unassessed",
+      "assessment_ids": []
+    },
+    {
+      "source": "ServiceAccount/demo/scanner",
+      "target": "MITRE/T1078",
+      "relation": "potential_attack_technique",
+      "finding_id": "RB-002",
+      "semantic_only": true,
+      "security_state": "unassessed",
+      "assessment_ids": []
+    },
+    {
+      "source": "ServiceAccount/demo/scanner",
+      "target": "MITRE/T1609",
+      "relation": "potential_attack_technique",
+      "finding_id": "RB-003",
+      "semantic_only": true,
+      "security_state": "unassessed",
+      "assessment_ids": []
+    },
+    {
+      "source": "ServiceAccount/demo/scanner",
+      "target": "MITRE/T1078",
+      "relation": "potential_attack_technique",
+      "finding_id": "RB-004",
+      "semantic_only": true,
+      "security_state": "unassessed",
+      "assessment_ids": []
+    },
+    {
+      "source": "ServiceAccount/demo/scanner",
+      "target": "MITRE/T1078",
+      "relation": "potential_attack_technique",
+      "finding_id": "RB-005",
+      "semantic_only": true,
+      "security_state": "unassessed",
+      "assessment_ids": []
+    },
+    {
+      "source": "Pod/demo/vulnerable-pod",
+      "target": "MITRE/T1611",
+      "relation": "potential_attack_technique",
+      "finding_id": "A-0010",
+      "semantic_only": true,
+      "security_state": "unassessed",
+      "assessment_ids": []
     }
   ],
   "findings": [
@@ -133,7 +291,7 @@
       "rule": "RBAC_WILDCARD",
       "severity": "high",
       "resource": "Role/demo/excessive",
-      "description": "Role grants wildcard API verbs or resources",
+      "description": "Role declares wildcard API verbs, resources, or API groups",
       "evidence": {
         "kind": "Role",
         "name": "excessive"
@@ -149,10 +307,17 @@
       ],
       "cis_kubernetes": [
         {
-          "topic": "RBAC least privilege",
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.1.3",
+          "title": "Minimize wildcard use in Roles and ClusterRoles",
           "benchmark_version": null,
-          "control_id": null,
-          "status": "candidate_mapping_requires_versioned_review"
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
         }
       ]
     },
@@ -161,7 +326,7 @@
       "rule": "RBAC_SECRET_READ",
       "severity": "high",
       "resource": "Role/demo/excessive",
-      "description": "Role can read Kubernetes Secrets",
+      "description": "Role declares broad access to core Kubernetes Secrets",
       "evidence": {
         "kind": "Role",
         "name": "excessive"
@@ -177,15 +342,57 @@
       ],
       "cis_kubernetes": [
         {
-          "topic": "RBAC least privilege / secrets access",
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.1.2",
+          "title": "Minimize access to secrets",
           "benchmark_version": null,
-          "control_id": null,
-          "status": "candidate_mapping_requires_versioned_review"
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
         }
       ]
     },
     {
       "id": "F-003",
+      "rule": "RBAC_SECRET_READ",
+      "severity": "high",
+      "resource": "Role/demo/excessive",
+      "description": "Role declares broad access to core Kubernetes Secrets",
+      "evidence": {
+        "kind": "Role",
+        "name": "excessive"
+      },
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.1.2",
+          "title": "Minimize access to secrets",
+          "benchmark_version": null,
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "F-004",
       "rule": "PRIVILEGED_CONTAINER",
       "severity": "critical",
       "resource": "Pod/demo/vulnerable-pod",
@@ -205,10 +412,17 @@
       ],
       "cis_kubernetes": [
         {
-          "topic": "Pod/container privilege restrictions",
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.2.1",
+          "title": "Minimize the admission of privileged containers",
           "benchmark_version": null,
-          "control_id": null,
-          "status": "candidate_mapping_requires_versioned_review"
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
         }
       ]
     },
@@ -233,8 +447,30 @@
         ],
         "resourceNames": []
       },
-      "mitre_attack": [],
-      "cis_kubernetes": []
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.1.3",
+          "title": "Minimize wildcard use in Roles and ClusterRoles",
+          "benchmark_version": null,
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
+        }
+      ]
     },
     {
       "id": "RB-002",
@@ -257,35 +493,33 @@
         ],
         "resourceNames": []
       },
-      "mitre_attack": [],
-      "cis_kubernetes": []
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.1.2",
+          "title": "Minimize access to secrets",
+          "benchmark_version": null,
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
+        }
+      ]
     },
     {
       "id": "RB-003",
-      "rule": "EFFECTIVE_RBAC_MUTATION",
-      "severity": "critical",
-      "resource": "ServiceAccount/demo/scanner",
-      "description": "ServiceAccount can modify access-control resources",
-      "evidence": {
-        "binding": "RoleBinding/demo/grant-excessive",
-        "role": "Role/demo/excessive",
-        "scope": "demo",
-        "apiGroups": [
-          ""
-        ],
-        "resources": [
-          "*"
-        ],
-        "verbs": [
-          "*"
-        ],
-        "resourceNames": []
-      },
-      "mitre_attack": [],
-      "cis_kubernetes": []
-    },
-    {
-      "id": "RB-004",
       "rule": "EFFECTIVE_POD_EXEC",
       "severity": "high",
       "resource": "ServiceAccount/demo/scanner",
@@ -305,8 +539,62 @@
         ],
         "resourceNames": []
       },
-      "mitre_attack": [],
-      "cis_kubernetes": []
+      "mitre_attack": [
+        {
+          "technique_id": "T1609",
+          "name": "Container Administration Command",
+          "tactic": "Execution",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1609/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "topic": "RBAC least privilege",
+          "benchmark_version": null,
+          "control_id": null,
+          "status": "candidate_mapping_requires_versioned_review"
+        }
+      ]
+    },
+    {
+      "id": "RB-004",
+      "rule": "EFFECTIVE_RBAC_IMPERSONATE",
+      "severity": "critical",
+      "resource": "ServiceAccount/demo/scanner",
+      "description": "ServiceAccount has identity impersonation authorization",
+      "evidence": {
+        "binding": "RoleBinding/demo/grant-excessive",
+        "role": "Role/demo/excessive",
+        "scope": "demo",
+        "apiGroups": [
+          ""
+        ],
+        "resources": [
+          "*"
+        ],
+        "verbs": [
+          "*"
+        ],
+        "resourceNames": []
+      },
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "topic": "RBAC identity impersonation",
+          "benchmark_version": null,
+          "control_id": null,
+          "status": "candidate_mapping_requires_versioned_review"
+        }
+      ]
     },
     {
       "id": "RB-005",
@@ -330,11 +618,33 @@
         ],
         "resourceNames": []
       },
-      "mitre_attack": [],
-      "cis_kubernetes": []
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.1.2",
+          "title": "Minimize access to secrets",
+          "benchmark_version": null,
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
+        }
+      ]
     },
     {
-      "id": "A-0009",
+      "id": "A-0010",
       "rule": "PRIVILEGED_CONTAINER",
       "severity": "critical",
       "resource": "Pod/demo/vulnerable-pod",
@@ -354,10 +664,17 @@
       ],
       "cis_kubernetes": [
         {
-          "topic": "Pod/container privilege restrictions",
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.2.1",
+          "title": "Minimize the admission of privileged containers",
           "benchmark_version": null,
-          "control_id": null,
-          "status": "candidate_mapping_requires_versioned_review"
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
         }
       ]
     }
@@ -395,10 +712,17 @@
       ],
       "cis_kubernetes": [
         {
-          "topic": "RBAC least privilege / secrets access",
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.1.2",
+          "title": "Minimize access to secrets",
           "benchmark_version": null,
-          "control_id": null,
-          "status": "candidate_mapping_requires_versioned_review"
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
         }
       ]
     },
@@ -501,12 +825,36 @@
         "API server reachable and authorization rules applicable",
         "Target Secret exists within the grant scope and meets resourceNames restrictions"
       ],
-      "credential_mount": "not_explicitly_disabled",
+      "credential_mount": "enabled_by_kubernetes_default",
+      "credential_evidence": {
+        "workload": "Pod/demo/vulnerable-pod",
+        "service_account": "ServiceAccount/demo/scanner",
+        "service_account_in_snapshot": true,
+        "pod_automount": null,
+        "service_account_automount": null,
+        "credential_mount": "enabled_by_kubernetes_default",
+        "decision_source": "kubernetes_default",
+        "credentials_observed": false,
+        "explanation": "Configuration permits projected ServiceAccount token mounting; token possession and API access remain unverified."
+      },
+      "explainability": {
+        "configuration_fact": "RBAC permission is granted to ServiceAccount/demo/scanner through RoleBinding/demo/grant-excessive and Role/demo/excessive.",
+        "hypothesis": "If an attacker controls Pod/demo/vulnerable-pod and obtains authorized API credentials, this grant may enable: Kubernetes API read of Secret objects.",
+        "unknowns": [
+          "Attacker foothold is hypothetical",
+          "Credentials have not been observed",
+          "API reachability and runtime authorization have not been verified"
+        ],
+        "framework_mappings_are_detection_context_not_proof_of_attack": true
+      },
       "scope": "demo",
       "mitre_technique": "T1078",
       "evidence": {
         "binding": "RoleBinding/demo/grant-excessive",
         "role": "Role/demo/excessive",
+        "apiGroups": [
+          ""
+        ],
         "verbs": [
           "*"
         ],
@@ -519,7 +867,7 @@
     },
     {
       "id": "T-002",
-      "rule": "POTENTIAL_RBAC_MUTATION",
+      "rule": "POTENTIAL_IDENTITY_IMPERSONATION",
       "severity": "critical",
       "classification": "conditional_attack_transition",
       "nodes": [
@@ -529,19 +877,43 @@
         "Role/demo/excessive"
       ],
       "initial_state": "Assumed code execution in Pod/demo/vulnerable-pod",
-      "possible_effect": "Kubernetes RBAC binding modification",
+      "possible_effect": "Potential ability to impersonate Kubernetes identities",
       "preconditions": [
         "Hypothetical attacker code execution in the workload",
         "Usable API credentials for the workload ServiceAccount",
         "API server reachable and authorization rules applicable",
-        "API admission and RBAC bind/escalate safeguards also permit the requested modification"
+        "Authorized target, scope, and API-server policy permit the requested operation; activity is not observed"
       ],
-      "credential_mount": "not_explicitly_disabled",
+      "credential_mount": "enabled_by_kubernetes_default",
+      "credential_evidence": {
+        "workload": "Pod/demo/vulnerable-pod",
+        "service_account": "ServiceAccount/demo/scanner",
+        "service_account_in_snapshot": true,
+        "pod_automount": null,
+        "service_account_automount": null,
+        "credential_mount": "enabled_by_kubernetes_default",
+        "decision_source": "kubernetes_default",
+        "credentials_observed": false,
+        "explanation": "Configuration permits projected ServiceAccount token mounting; token possession and API access remain unverified."
+      },
+      "explainability": {
+        "configuration_fact": "RBAC permission is granted to ServiceAccount/demo/scanner through RoleBinding/demo/grant-excessive and Role/demo/excessive.",
+        "hypothesis": "If an attacker controls Pod/demo/vulnerable-pod and obtains authorized API credentials, this grant may enable: Potential ability to impersonate Kubernetes identities.",
+        "unknowns": [
+          "Attacker foothold is hypothetical",
+          "Credentials have not been observed",
+          "API reachability and runtime authorization have not been verified"
+        ],
+        "framework_mappings_are_detection_context_not_proof_of_attack": true
+      },
       "scope": "demo",
       "mitre_technique": "T1078",
       "evidence": {
         "binding": "RoleBinding/demo/grant-excessive",
         "role": "Role/demo/excessive",
+        "apiGroups": [
+          ""
+        ],
         "verbs": [
           "*"
         ],
@@ -570,12 +942,36 @@
         "Usable API credentials for the workload ServiceAccount",
         "API server reachable and authorization rules applicable"
       ],
-      "credential_mount": "not_explicitly_disabled",
+      "credential_mount": "enabled_by_kubernetes_default",
+      "credential_evidence": {
+        "workload": "Pod/demo/vulnerable-pod",
+        "service_account": "ServiceAccount/demo/scanner",
+        "service_account_in_snapshot": true,
+        "pod_automount": null,
+        "service_account_automount": null,
+        "credential_mount": "enabled_by_kubernetes_default",
+        "decision_source": "kubernetes_default",
+        "credentials_observed": false,
+        "explanation": "Configuration permits projected ServiceAccount token mounting; token possession and API access remain unverified."
+      },
+      "explainability": {
+        "configuration_fact": "RBAC permission is granted to ServiceAccount/demo/scanner through RoleBinding/demo/grant-excessive and Role/demo/excessive.",
+        "hypothesis": "If an attacker controls Pod/demo/vulnerable-pod and obtains authorized API credentials, this grant may enable: Workload creation permission.",
+        "unknowns": [
+          "Attacker foothold is hypothetical",
+          "Credentials have not been observed",
+          "API reachability and runtime authorization have not been verified"
+        ],
+        "framework_mappings_are_detection_context_not_proof_of_attack": true
+      },
       "scope": "demo",
       "mitre_technique": "T1610",
       "evidence": {
         "binding": "RoleBinding/demo/grant-excessive",
         "role": "Role/demo/excessive",
+        "apiGroups": [
+          ""
+        ],
         "verbs": [
           "*"
         ],
@@ -600,6 +996,19 @@
       "benchmark": "CIS Kubernetes Benchmark",
       "benchmark_version": null,
       "cis_control_id": null,
+      "control_candidate": {
+        "benchmark": "CIS Kubernetes Benchmark",
+        "current_upstream_edition": "2.1.0",
+        "control_id": "5.2.1",
+        "title": "Minimize the admission of privileged containers",
+        "benchmark_version": null,
+        "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+        "assessment_type": "local_static_indicator_not_cis_compliance",
+        "sources": [
+          "https://www.cisecurity.org/benchmark/kubernetes",
+          "https://github.com/aquasecurity/kube-bench/discussions/1778"
+        ]
+      },
       "assessment_type": "cis_aligned_local_check_not_compliance"
     },
     {
@@ -614,6 +1023,19 @@
       "benchmark": "CIS Kubernetes Benchmark",
       "benchmark_version": null,
       "cis_control_id": null,
+      "control_candidate": {
+        "benchmark": "CIS Kubernetes Benchmark",
+        "current_upstream_edition": "2.1.0",
+        "control_id": "5.2.5",
+        "title": "Minimize the admission of containers with allowPrivilegeEscalation",
+        "benchmark_version": null,
+        "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+        "assessment_type": "local_static_indicator_not_cis_compliance",
+        "sources": [
+          "https://www.cisecurity.org/benchmark/kubernetes",
+          "https://github.com/aquasecurity/kube-bench/discussions/1778"
+        ]
+      },
       "assessment_type": "cis_aligned_local_check_not_compliance"
     },
     {
@@ -628,6 +1050,7 @@
       "benchmark": "CIS Kubernetes Benchmark",
       "benchmark_version": null,
       "cis_control_id": null,
+      "control_candidate": null,
       "assessment_type": "cis_aligned_local_check_not_compliance"
     },
     {
@@ -641,6 +1064,19 @@
       "benchmark": "CIS Kubernetes Benchmark",
       "benchmark_version": null,
       "cis_control_id": null,
+      "control_candidate": {
+        "benchmark": "CIS Kubernetes Benchmark",
+        "current_upstream_edition": "2.1.0",
+        "control_id": "5.2.4",
+        "title": "Minimize the admission of containers sharing the host network namespace",
+        "benchmark_version": null,
+        "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+        "assessment_type": "local_static_indicator_not_cis_compliance",
+        "sources": [
+          "https://www.cisecurity.org/benchmark/kubernetes",
+          "https://github.com/aquasecurity/kube-bench/discussions/1778"
+        ]
+      },
       "assessment_type": "cis_aligned_local_check_not_compliance"
     },
     {
@@ -654,6 +1090,19 @@
       "benchmark": "CIS Kubernetes Benchmark",
       "benchmark_version": null,
       "cis_control_id": null,
+      "control_candidate": {
+        "benchmark": "CIS Kubernetes Benchmark",
+        "current_upstream_edition": "2.1.0",
+        "control_id": "5.2.2",
+        "title": "Minimize the admission of containers sharing the host process ID namespace",
+        "benchmark_version": null,
+        "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+        "assessment_type": "local_static_indicator_not_cis_compliance",
+        "sources": [
+          "https://www.cisecurity.org/benchmark/kubernetes",
+          "https://github.com/aquasecurity/kube-bench/discussions/1778"
+        ]
+      },
       "assessment_type": "cis_aligned_local_check_not_compliance"
     },
     {
@@ -667,6 +1116,19 @@
       "benchmark": "CIS Kubernetes Benchmark",
       "benchmark_version": null,
       "cis_control_id": null,
+      "control_candidate": {
+        "benchmark": "CIS Kubernetes Benchmark",
+        "current_upstream_edition": "2.1.0",
+        "control_id": "5.2.3",
+        "title": "Minimize the admission of containers sharing the host IPC namespace",
+        "benchmark_version": null,
+        "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+        "assessment_type": "local_static_indicator_not_cis_compliance",
+        "sources": [
+          "https://www.cisecurity.org/benchmark/kubernetes",
+          "https://github.com/aquasecurity/kube-bench/discussions/1778"
+        ]
+      },
       "assessment_type": "cis_aligned_local_check_not_compliance"
     }
   ],
@@ -682,7 +1144,9 @@
     "CIS-aligned local checks are not official benchmark control audits; missing values are unknown, not pass.",
     "Conditional attack transitions assume an attacker foothold and usable credentials; they do not prove exploitation.",
     "MITRE edges indicate potential enabling conditions, not observed attacker behavior or confirmed exploit chains.",
-    "CIS topics are indicative only; choose a benchmark version and verify exact control IDs before claiming compliance."
+    "CIS topics are indicative only; choose a benchmark version and verify exact control IDs before claiming compliance.",
+    "Unassessed edges are not certified safe; red means a rule-supported risk, not proven exploitation.",
+    "An RBAC grant may support multiple subjects; inspect assessment evidence to identify each affected ServiceAccount and scope."
   ],
   "frameworks": {
     "mitre_attack": {
@@ -695,7 +1159,551 @@
     },
     "cis_kubernetes": {
       "benchmark_version": null,
+      "latest_upstream_edition": "2.1.0",
       "status": "topic_crosswalk_only; no control ID or compliance assertion"
+    }
+  },
+  "graph_assessments": [
+    {
+      "id": "GA-0001",
+      "finding_id": "F-001",
+      "rule": "RBAC_WILDCARD",
+      "severity": "high",
+      "classification": "detected_risky_configuration",
+      "confidence": "configuration_evidence",
+      "target_type": "node",
+      "target": {
+        "id": "Role/demo/excessive"
+      },
+      "resource": "Role/demo/excessive",
+      "evidence": {
+        "kind": "Role",
+        "name": "excessive"
+      },
+      "permission_grant_ids": [],
+      "description": "Role declares wildcard API verbs, resources, or API groups",
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.1.3",
+          "title": "Minimize wildcard use in Roles and ClusterRoles",
+          "benchmark_version": null,
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
+        }
+      ],
+      "interpretation": "Flagged configuration/capability; not proof of exploitation."
+    },
+    {
+      "id": "GA-0002",
+      "finding_id": "F-002",
+      "rule": "RBAC_SECRET_READ",
+      "severity": "high",
+      "classification": "detected_risky_configuration",
+      "confidence": "configuration_evidence",
+      "target_type": "node",
+      "target": {
+        "id": "Role/demo/excessive"
+      },
+      "resource": "Role/demo/excessive",
+      "evidence": {
+        "kind": "Role",
+        "name": "excessive"
+      },
+      "permission_grant_ids": [],
+      "description": "Role declares broad access to core Kubernetes Secrets",
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.1.2",
+          "title": "Minimize access to secrets",
+          "benchmark_version": null,
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
+        }
+      ],
+      "interpretation": "Flagged configuration/capability; not proof of exploitation."
+    },
+    {
+      "id": "GA-0003",
+      "finding_id": "F-003",
+      "rule": "RBAC_SECRET_READ",
+      "severity": "high",
+      "classification": "detected_risky_configuration",
+      "confidence": "configuration_evidence",
+      "target_type": "node",
+      "target": {
+        "id": "Role/demo/excessive"
+      },
+      "resource": "Role/demo/excessive",
+      "evidence": {
+        "kind": "Role",
+        "name": "excessive"
+      },
+      "permission_grant_ids": [],
+      "description": "Role declares broad access to core Kubernetes Secrets",
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.1.2",
+          "title": "Minimize access to secrets",
+          "benchmark_version": null,
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
+        }
+      ],
+      "interpretation": "Flagged configuration/capability; not proof of exploitation."
+    },
+    {
+      "id": "GA-0004",
+      "finding_id": "F-004",
+      "rule": "PRIVILEGED_CONTAINER",
+      "severity": "critical",
+      "classification": "detected_risky_configuration",
+      "confidence": "configuration_evidence",
+      "target_type": "node",
+      "target": {
+        "id": "Pod/demo/vulnerable-pod"
+      },
+      "resource": "Pod/demo/vulnerable-pod",
+      "evidence": {
+        "kind": "Pod",
+        "name": "vulnerable-pod"
+      },
+      "permission_grant_ids": [],
+      "description": "Container app is privileged",
+      "mitre_attack": [
+        {
+          "technique_id": "T1611",
+          "name": "Escape to Host",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1611/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.2.1",
+          "title": "Minimize the admission of privileged containers",
+          "benchmark_version": null,
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
+        }
+      ],
+      "interpretation": "Flagged configuration/capability; not proof of exploitation."
+    },
+    {
+      "id": "GA-0005",
+      "finding_id": "RB-001",
+      "rule": "EFFECTIVE_RBAC_WILDCARD",
+      "severity": "high",
+      "classification": "detected_risky_configuration",
+      "confidence": "configuration_evidence",
+      "target_type": "edge",
+      "target": {
+        "source": "RoleBinding/demo/grant-excessive",
+        "target": "Role/demo/excessive"
+      },
+      "resource": "ServiceAccount/demo/scanner",
+      "evidence": {
+        "binding": "RoleBinding/demo/grant-excessive",
+        "role": "Role/demo/excessive",
+        "scope": "demo",
+        "apiGroups": [
+          ""
+        ],
+        "resources": [
+          "*"
+        ],
+        "verbs": [
+          "*"
+        ],
+        "resourceNames": []
+      },
+      "permission_grant_ids": [
+        "PG-c4cf41388b4988cf"
+      ],
+      "description": "Binding grants wildcard permissions",
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.1.3",
+          "title": "Minimize wildcard use in Roles and ClusterRoles",
+          "benchmark_version": null,
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
+        }
+      ],
+      "interpretation": "Flagged configuration/capability; not proof of exploitation."
+    },
+    {
+      "id": "GA-0006",
+      "finding_id": "RB-002",
+      "rule": "EFFECTIVE_SECRET_READ",
+      "severity": "high",
+      "classification": "detected_risky_configuration",
+      "confidence": "configuration_evidence",
+      "target_type": "edge",
+      "target": {
+        "source": "RoleBinding/demo/grant-excessive",
+        "target": "Role/demo/excessive"
+      },
+      "resource": "ServiceAccount/demo/scanner",
+      "evidence": {
+        "binding": "RoleBinding/demo/grant-excessive",
+        "role": "Role/demo/excessive",
+        "scope": "demo",
+        "apiGroups": [
+          ""
+        ],
+        "resources": [
+          "*"
+        ],
+        "verbs": [
+          "*"
+        ],
+        "resourceNames": []
+      },
+      "permission_grant_ids": [
+        "PG-069ed3724739f229",
+        "PG-c4cf41388b4988cf",
+        "PG-ea7fe459dbdbcf31"
+      ],
+      "description": "ServiceAccount can read Secrets in the indicated scope",
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.1.2",
+          "title": "Minimize access to secrets",
+          "benchmark_version": null,
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
+        }
+      ],
+      "interpretation": "Flagged configuration/capability; not proof of exploitation."
+    },
+    {
+      "id": "GA-0007",
+      "finding_id": "RB-003",
+      "rule": "EFFECTIVE_POD_EXEC",
+      "severity": "high",
+      "classification": "detected_risky_configuration",
+      "confidence": "configuration_evidence",
+      "target_type": "edge",
+      "target": {
+        "source": "RoleBinding/demo/grant-excessive",
+        "target": "Role/demo/excessive"
+      },
+      "resource": "ServiceAccount/demo/scanner",
+      "evidence": {
+        "binding": "RoleBinding/demo/grant-excessive",
+        "role": "Role/demo/excessive",
+        "scope": "demo",
+        "apiGroups": [
+          ""
+        ],
+        "resources": [
+          "*"
+        ],
+        "verbs": [
+          "*"
+        ],
+        "resourceNames": []
+      },
+      "permission_grant_ids": [
+        "PG-c4cf41388b4988cf"
+      ],
+      "description": "ServiceAccount may initiate pod exec/attach requests",
+      "mitre_attack": [
+        {
+          "technique_id": "T1609",
+          "name": "Container Administration Command",
+          "tactic": "Execution",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1609/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "topic": "RBAC least privilege",
+          "benchmark_version": null,
+          "control_id": null,
+          "status": "candidate_mapping_requires_versioned_review"
+        }
+      ],
+      "interpretation": "Flagged configuration/capability; not proof of exploitation."
+    },
+    {
+      "id": "GA-0008",
+      "finding_id": "RB-004",
+      "rule": "EFFECTIVE_RBAC_IMPERSONATE",
+      "severity": "critical",
+      "classification": "detected_risky_configuration",
+      "confidence": "configuration_evidence",
+      "target_type": "edge",
+      "target": {
+        "source": "RoleBinding/demo/grant-excessive",
+        "target": "Role/demo/excessive"
+      },
+      "resource": "ServiceAccount/demo/scanner",
+      "evidence": {
+        "binding": "RoleBinding/demo/grant-excessive",
+        "role": "Role/demo/excessive",
+        "scope": "demo",
+        "apiGroups": [
+          ""
+        ],
+        "resources": [
+          "*"
+        ],
+        "verbs": [
+          "*"
+        ],
+        "resourceNames": []
+      },
+      "permission_grant_ids": [
+        "PG-c4cf41388b4988cf"
+      ],
+      "description": "ServiceAccount has identity impersonation authorization",
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "topic": "RBAC identity impersonation",
+          "benchmark_version": null,
+          "control_id": null,
+          "status": "candidate_mapping_requires_versioned_review"
+        }
+      ],
+      "interpretation": "Flagged configuration/capability; not proof of exploitation."
+    },
+    {
+      "id": "GA-0009",
+      "finding_id": "RB-005",
+      "rule": "EFFECTIVE_SECRET_READ",
+      "severity": "high",
+      "classification": "detected_risky_configuration",
+      "confidence": "configuration_evidence",
+      "target_type": "edge",
+      "target": {
+        "source": "RoleBinding/demo/grant-excessive",
+        "target": "Role/demo/excessive"
+      },
+      "resource": "ServiceAccount/demo/scanner",
+      "evidence": {
+        "binding": "RoleBinding/demo/grant-excessive",
+        "role": "Role/demo/excessive",
+        "scope": "demo",
+        "apiGroups": [
+          ""
+        ],
+        "resources": [
+          "secrets"
+        ],
+        "verbs": [
+          "get",
+          "list"
+        ],
+        "resourceNames": []
+      },
+      "permission_grant_ids": [
+        "PG-069ed3724739f229",
+        "PG-c4cf41388b4988cf",
+        "PG-ea7fe459dbdbcf31"
+      ],
+      "description": "ServiceAccount can read Secrets in the indicated scope",
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.1.2",
+          "title": "Minimize access to secrets",
+          "benchmark_version": null,
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
+        }
+      ],
+      "interpretation": "Flagged configuration/capability; not proof of exploitation."
+    },
+    {
+      "id": "GA-0010",
+      "finding_id": "A-0010",
+      "rule": "PRIVILEGED_CONTAINER",
+      "severity": "critical",
+      "classification": "detected_risky_configuration",
+      "confidence": "configuration_evidence",
+      "target_type": "node",
+      "target": {
+        "id": "Pod/demo/vulnerable-pod"
+      },
+      "resource": "Pod/demo/vulnerable-pod",
+      "evidence": {
+        "container": "app"
+      },
+      "permission_grant_ids": [],
+      "description": "app runs privileged",
+      "mitre_attack": [
+        {
+          "technique_id": "T1611",
+          "name": "Escape to Host",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1611/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.2.1",
+          "title": "Minimize the admission of privileged containers",
+          "benchmark_version": null,
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
+        }
+      ],
+      "interpretation": "Flagged configuration/capability; not proof of exploitation."
+    }
+  ],
+  "permission_grant_summary": {
+    "total": 3,
+    "flagged": 3,
+    "note": "One record per explicit API-group/resource/verb; wildcard values are not expanded."
+  },
+  "graph_assessment_summary": {
+    "risk": 10,
+    "conditional_review": 0,
+    "assessed_edges": 1,
+    "unassessed_edges": 12
+  },
+  "graph_layout": {
+    "ServiceAccount/demo/scanner": {
+      "x": 167.58,
+      "y": 276.96
+    },
+    "Role/demo/excessive": {
+      "x": 405.0,
+      "y": 117.36
+    },
+    "RoleBinding/demo/grant-excessive": {
+      "x": 292.35,
+      "y": 193.09
+    },
+    "Pod/demo/vulnerable-pod": {
+      "x": 55.07,
+      "y": 352.6
+    },
+    "MITRE/T1078": {
+      "x": 750.0,
+      "y": 235.0
+    },
+    "MITRE/T1609": {
+      "x": 1270.0,
+      "y": 235.0
+    },
+    "MITRE/T1611": {
+      "x": 1790.0,
+      "y": 235.0
     }
   }
 }

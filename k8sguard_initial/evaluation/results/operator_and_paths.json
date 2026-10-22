@@ -19,6 +19,40 @@
       "scope": "app-ns"
     }
   ],
+  "permission_grants": [
+    {
+      "subject": "ServiceAccount/app-ns/scanning-bot",
+      "binding": "RoleBinding/app-ns/secret-access",
+      "role": "Role/app-ns/secrets-reader",
+      "scope": "app-ns",
+      "api_group": "",
+      "resource": "secrets",
+      "verb": "get",
+      "resource_names": [],
+      "grant_id": "PG-81cb08ef761d28a0",
+      "indicators": [
+        "RBAC_SECRET_READ_PERMISSION"
+      ],
+      "risk_state": "risk",
+      "interpretation": "Static declared authorization, subject to admission and runtime prerequisites."
+    },
+    {
+      "subject": "ServiceAccount/app-ns/scanning-bot",
+      "binding": "RoleBinding/app-ns/secret-access",
+      "role": "Role/app-ns/secrets-reader",
+      "scope": "app-ns",
+      "api_group": "",
+      "resource": "secrets",
+      "verb": "list",
+      "resource_names": [],
+      "grant_id": "PG-cb84d42cc3204043",
+      "indicators": [
+        "RBAC_SECRET_READ_PERMISSION"
+      ],
+      "risk_state": "risk",
+      "interpretation": "Static declared authorization, subject to admission and runtime prerequisites."
+    }
+  ],
   "unresolved_references": [],
   "resources": 7,
   "nodes": [
@@ -26,75 +60,116 @@
       "id": "ServiceAccount/app-ns/scanning-bot",
       "label": "scanning-bot",
       "kind": "ServiceAccount",
-      "namespace": "app-ns"
+      "namespace": "app-ns",
+      "security_state": "risk",
+      "assessment_ids": [
+        "GA-0002"
+      ],
+      "highest_severity": "high"
     },
     {
       "id": "Role/app-ns/secrets-reader",
       "label": "secrets-reader",
       "kind": "Role",
-      "namespace": "app-ns"
+      "namespace": "app-ns",
+      "security_state": "risk",
+      "assessment_ids": [
+        "GA-0001"
+      ],
+      "highest_severity": "high"
     },
     {
       "id": "RoleBinding/app-ns/secret-access",
       "label": "secret-access",
       "kind": "RoleBinding",
-      "namespace": "app-ns"
+      "namespace": "app-ns",
+      "security_state": "unassessed",
+      "assessment_ids": []
     },
     {
       "id": "Deployment/app-ns/data-service",
       "label": "data-service",
       "kind": "Deployment",
-      "namespace": "app-ns"
+      "namespace": "app-ns",
+      "security_state": "risk",
+      "assessment_ids": [
+        "GA-0003"
+      ],
+      "highest_severity": "high"
     },
     {
       "id": "ClusterIssuer/default/org-issuer",
       "label": "org-issuer",
       "kind": "ClusterIssuer",
-      "namespace": "default"
+      "namespace": "default",
+      "security_state": "unassessed",
+      "assessment_ids": []
     },
     {
       "id": "Certificate/app-ns/service-tls",
       "label": "service-tls",
       "kind": "Certificate",
-      "namespace": "app-ns"
+      "namespace": "app-ns",
+      "security_state": "review",
+      "assessment_ids": [
+        "GA-0004"
+      ],
+      "highest_severity": "medium"
     },
     {
       "id": "NetworkPolicy/app-ns/lock-ingress",
       "label": "lock-ingress",
       "kind": "NetworkPolicy",
-      "namespace": "app-ns"
+      "namespace": "app-ns",
+      "security_state": "unassessed",
+      "assessment_ids": []
     },
     {
-      "id": "ClusterIssuer/cluster/org-issuer"
+      "id": "ClusterIssuer/cluster/org-issuer",
+      "security_state": "unassessed",
+      "assessment_ids": []
     },
     {
       "id": "MITRE/T1078",
       "kind": "MitreTechnique",
       "label": "T1078: Valid Accounts",
-      "namespace": "framework"
+      "namespace": "framework",
+      "security_state": "unassessed",
+      "assessment_ids": []
     },
     {
       "id": "MITRE/T1611",
       "kind": "MitreTechnique",
       "label": "T1611: Escape to Host",
-      "namespace": "framework"
+      "namespace": "framework",
+      "security_state": "unassessed",
+      "assessment_ids": []
     }
   ],
   "edges": [
     {
       "source": "ServiceAccount/app-ns/scanning-bot",
       "target": "RoleBinding/app-ns/secret-access",
-      "relation": "bound_by"
+      "relation": "bound_by",
+      "security_state": "unassessed",
+      "assessment_ids": []
     },
     {
       "source": "RoleBinding/app-ns/secret-access",
       "target": "Role/app-ns/secrets-reader",
-      "relation": "grants_role"
+      "relation": "grants_role",
+      "security_state": "risk",
+      "assessment_ids": [
+        "GA-0002"
+      ],
+      "highest_severity": "high"
     },
     {
       "source": "Deployment/app-ns/data-service",
       "target": "ServiceAccount/app-ns/scanning-bot",
-      "relation": "uses_service_account"
+      "relation": "uses_service_account",
+      "security_state": "unassessed",
+      "assessment_ids": []
     },
     {
       "source": "Certificate/app-ns/service-tls",
@@ -102,21 +177,39 @@
       "relation": "operator_reference",
       "field": "spec.issuerRef",
       "cross_namespace": true,
-      "confidence": "verified_object_reference"
+      "confidence": "verified_object_reference",
+      "security_state": "review",
+      "assessment_ids": [
+        "GA-0004"
+      ],
+      "highest_severity": "medium"
     },
     {
       "source": "Role/app-ns/secrets-reader",
       "target": "MITRE/T1078",
       "relation": "potential_attack_technique",
       "finding_id": "F-001",
-      "semantic_only": true
+      "semantic_only": true,
+      "security_state": "unassessed",
+      "assessment_ids": []
+    },
+    {
+      "source": "ServiceAccount/app-ns/scanning-bot",
+      "target": "MITRE/T1078",
+      "relation": "potential_attack_technique",
+      "finding_id": "RB-001",
+      "semantic_only": true,
+      "security_state": "unassessed",
+      "assessment_ids": []
     },
     {
       "source": "Deployment/app-ns/data-service",
       "target": "MITRE/T1611",
       "relation": "potential_attack_technique",
       "finding_id": "A-0003",
-      "semantic_only": true
+      "semantic_only": true,
+      "security_state": "unassessed",
+      "assessment_ids": []
     }
   ],
   "findings": [
@@ -125,7 +218,7 @@
       "rule": "RBAC_SECRET_READ",
       "severity": "high",
       "resource": "Role/app-ns/secrets-reader",
-      "description": "Role can read Kubernetes Secrets",
+      "description": "Role declares broad access to core Kubernetes Secrets",
       "evidence": {
         "kind": "Role",
         "name": "secrets-reader"
@@ -141,10 +234,17 @@
       ],
       "cis_kubernetes": [
         {
-          "topic": "RBAC least privilege / secrets access",
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.1.2",
+          "title": "Minimize access to secrets",
           "benchmark_version": null,
-          "control_id": null,
-          "status": "candidate_mapping_requires_versioned_review"
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
         }
       ]
     },
@@ -170,8 +270,30 @@
         ],
         "resourceNames": []
       },
-      "mitre_attack": [],
-      "cis_kubernetes": []
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.1.2",
+          "title": "Minimize access to secrets",
+          "benchmark_version": null,
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
+        }
+      ]
     },
     {
       "id": "A-0003",
@@ -194,10 +316,17 @@
       ],
       "cis_kubernetes": [
         {
-          "topic": "Pod/container privilege restrictions",
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.2.5",
+          "title": "Minimize the admission of containers with allowPrivilegeEscalation",
           "benchmark_version": null,
-          "control_id": null,
-          "status": "candidate_mapping_requires_versioned_review"
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
         }
       ]
     },
@@ -292,10 +421,17 @@
       ],
       "cis_kubernetes": [
         {
-          "topic": "RBAC least privilege / secrets access",
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.1.2",
+          "title": "Minimize access to secrets",
           "benchmark_version": null,
-          "control_id": null,
-          "status": "candidate_mapping_requires_versioned_review"
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
         }
       ]
     }
@@ -320,12 +456,36 @@
         "API server reachable and authorization rules applicable",
         "Target Secret exists within the grant scope and meets resourceNames restrictions"
       ],
-      "credential_mount": "not_explicitly_disabled",
+      "credential_mount": "enabled_by_kubernetes_default",
+      "credential_evidence": {
+        "workload": "Deployment/app-ns/data-service",
+        "service_account": "ServiceAccount/app-ns/scanning-bot",
+        "service_account_in_snapshot": true,
+        "pod_automount": null,
+        "service_account_automount": null,
+        "credential_mount": "enabled_by_kubernetes_default",
+        "decision_source": "kubernetes_default",
+        "credentials_observed": false,
+        "explanation": "Configuration permits projected ServiceAccount token mounting; token possession and API access remain unverified."
+      },
+      "explainability": {
+        "configuration_fact": "RBAC permission is granted to ServiceAccount/app-ns/scanning-bot through RoleBinding/app-ns/secret-access and Role/app-ns/secrets-reader.",
+        "hypothesis": "If an attacker controls Deployment/app-ns/data-service and obtains authorized API credentials, this grant may enable: Kubernetes API read of Secret objects.",
+        "unknowns": [
+          "Attacker foothold is hypothetical",
+          "Credentials have not been observed",
+          "API reachability and runtime authorization have not been verified"
+        ],
+        "framework_mappings_are_detection_context_not_proof_of_attack": true
+      },
       "scope": "app-ns",
       "mitre_technique": "T1078",
       "evidence": {
         "binding": "RoleBinding/app-ns/secret-access",
         "role": "Role/app-ns/secrets-reader",
+        "apiGroups": [
+          ""
+        ],
         "verbs": [
           "get",
           "list"
@@ -351,6 +511,19 @@
       "benchmark": "CIS Kubernetes Benchmark",
       "benchmark_version": null,
       "cis_control_id": null,
+      "control_candidate": {
+        "benchmark": "CIS Kubernetes Benchmark",
+        "current_upstream_edition": "2.1.0",
+        "control_id": "5.2.1",
+        "title": "Minimize the admission of privileged containers",
+        "benchmark_version": null,
+        "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+        "assessment_type": "local_static_indicator_not_cis_compliance",
+        "sources": [
+          "https://www.cisecurity.org/benchmark/kubernetes",
+          "https://github.com/aquasecurity/kube-bench/discussions/1778"
+        ]
+      },
       "assessment_type": "cis_aligned_local_check_not_compliance"
     },
     {
@@ -365,6 +538,19 @@
       "benchmark": "CIS Kubernetes Benchmark",
       "benchmark_version": null,
       "cis_control_id": null,
+      "control_candidate": {
+        "benchmark": "CIS Kubernetes Benchmark",
+        "current_upstream_edition": "2.1.0",
+        "control_id": "5.2.5",
+        "title": "Minimize the admission of containers with allowPrivilegeEscalation",
+        "benchmark_version": null,
+        "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+        "assessment_type": "local_static_indicator_not_cis_compliance",
+        "sources": [
+          "https://www.cisecurity.org/benchmark/kubernetes",
+          "https://github.com/aquasecurity/kube-bench/discussions/1778"
+        ]
+      },
       "assessment_type": "cis_aligned_local_check_not_compliance"
     },
     {
@@ -379,6 +565,7 @@
       "benchmark": "CIS Kubernetes Benchmark",
       "benchmark_version": null,
       "cis_control_id": null,
+      "control_candidate": null,
       "assessment_type": "cis_aligned_local_check_not_compliance"
     },
     {
@@ -392,6 +579,19 @@
       "benchmark": "CIS Kubernetes Benchmark",
       "benchmark_version": null,
       "cis_control_id": null,
+      "control_candidate": {
+        "benchmark": "CIS Kubernetes Benchmark",
+        "current_upstream_edition": "2.1.0",
+        "control_id": "5.2.4",
+        "title": "Minimize the admission of containers sharing the host network namespace",
+        "benchmark_version": null,
+        "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+        "assessment_type": "local_static_indicator_not_cis_compliance",
+        "sources": [
+          "https://www.cisecurity.org/benchmark/kubernetes",
+          "https://github.com/aquasecurity/kube-bench/discussions/1778"
+        ]
+      },
       "assessment_type": "cis_aligned_local_check_not_compliance"
     },
     {
@@ -405,6 +605,19 @@
       "benchmark": "CIS Kubernetes Benchmark",
       "benchmark_version": null,
       "cis_control_id": null,
+      "control_candidate": {
+        "benchmark": "CIS Kubernetes Benchmark",
+        "current_upstream_edition": "2.1.0",
+        "control_id": "5.2.2",
+        "title": "Minimize the admission of containers sharing the host process ID namespace",
+        "benchmark_version": null,
+        "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+        "assessment_type": "local_static_indicator_not_cis_compliance",
+        "sources": [
+          "https://www.cisecurity.org/benchmark/kubernetes",
+          "https://github.com/aquasecurity/kube-bench/discussions/1778"
+        ]
+      },
       "assessment_type": "cis_aligned_local_check_not_compliance"
     },
     {
@@ -418,6 +631,19 @@
       "benchmark": "CIS Kubernetes Benchmark",
       "benchmark_version": null,
       "cis_control_id": null,
+      "control_candidate": {
+        "benchmark": "CIS Kubernetes Benchmark",
+        "current_upstream_edition": "2.1.0",
+        "control_id": "5.2.3",
+        "title": "Minimize the admission of containers sharing the host IPC namespace",
+        "benchmark_version": null,
+        "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+        "assessment_type": "local_static_indicator_not_cis_compliance",
+        "sources": [
+          "https://www.cisecurity.org/benchmark/kubernetes",
+          "https://github.com/aquasecurity/kube-bench/discussions/1778"
+        ]
+      },
       "assessment_type": "cis_aligned_local_check_not_compliance"
     }
   ],
@@ -457,7 +683,9 @@
     "CIS-aligned local checks are not official benchmark control audits; missing values are unknown, not pass.",
     "Conditional attack transitions assume an attacker foothold and usable credentials; they do not prove exploitation.",
     "MITRE edges indicate potential enabling conditions, not observed attacker behavior or confirmed exploit chains.",
-    "CIS topics are indicative only; choose a benchmark version and verify exact control IDs before claiming compliance."
+    "CIS topics are indicative only; choose a benchmark version and verify exact control IDs before claiming compliance.",
+    "Unassessed edges are not certified safe; red means a rule-supported risk, not proven exploitation.",
+    "An RBAC grant may support multiple subjects; inspect assessment evidence to identify each affected ServiceAccount and scope."
   ],
   "frameworks": {
     "mitre_attack": {
@@ -469,7 +697,245 @@
     },
     "cis_kubernetes": {
       "benchmark_version": null,
+      "latest_upstream_edition": "2.1.0",
       "status": "topic_crosswalk_only; no control ID or compliance assertion"
+    }
+  },
+  "graph_assessments": [
+    {
+      "id": "GA-0001",
+      "finding_id": "F-001",
+      "rule": "RBAC_SECRET_READ",
+      "severity": "high",
+      "classification": "detected_risky_configuration",
+      "confidence": "configuration_evidence",
+      "target_type": "node",
+      "target": {
+        "id": "Role/app-ns/secrets-reader"
+      },
+      "resource": "Role/app-ns/secrets-reader",
+      "evidence": {
+        "kind": "Role",
+        "name": "secrets-reader"
+      },
+      "permission_grant_ids": [],
+      "description": "Role declares broad access to core Kubernetes Secrets",
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.1.2",
+          "title": "Minimize access to secrets",
+          "benchmark_version": null,
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
+        }
+      ],
+      "interpretation": "Flagged configuration/capability; not proof of exploitation."
+    },
+    {
+      "id": "GA-0002",
+      "finding_id": "RB-001",
+      "rule": "EFFECTIVE_SECRET_READ",
+      "severity": "high",
+      "classification": "detected_risky_configuration",
+      "confidence": "configuration_evidence",
+      "target_type": "edge",
+      "target": {
+        "source": "RoleBinding/app-ns/secret-access",
+        "target": "Role/app-ns/secrets-reader"
+      },
+      "resource": "ServiceAccount/app-ns/scanning-bot",
+      "evidence": {
+        "binding": "RoleBinding/app-ns/secret-access",
+        "role": "Role/app-ns/secrets-reader",
+        "scope": "app-ns",
+        "apiGroups": [
+          ""
+        ],
+        "resources": [
+          "secrets"
+        ],
+        "verbs": [
+          "get",
+          "list"
+        ],
+        "resourceNames": []
+      },
+      "permission_grant_ids": [
+        "PG-81cb08ef761d28a0",
+        "PG-cb84d42cc3204043"
+      ],
+      "description": "ServiceAccount can read Secrets in the indicated scope",
+      "mitre_attack": [
+        {
+          "technique_id": "T1078",
+          "name": "Valid Accounts",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1078/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.1.2",
+          "title": "Minimize access to secrets",
+          "benchmark_version": null,
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
+        }
+      ],
+      "interpretation": "Flagged configuration/capability; not proof of exploitation."
+    },
+    {
+      "id": "GA-0003",
+      "finding_id": "A-0003",
+      "rule": "PRIVILEGE_ESCALATION_ALLOWED",
+      "severity": "high",
+      "classification": "detected_risky_configuration",
+      "confidence": "configuration_evidence",
+      "target_type": "node",
+      "target": {
+        "id": "Deployment/app-ns/data-service"
+      },
+      "resource": "Deployment/app-ns/data-service",
+      "evidence": {
+        "container": "app"
+      },
+      "permission_grant_ids": [],
+      "description": "app explicitly allows privilege escalation",
+      "mitre_attack": [
+        {
+          "technique_id": "T1611",
+          "name": "Escape to Host",
+          "tactic": "Privilege Escalation",
+          "relationship": "potential_enabler",
+          "url": "https://attack.mitre.org/techniques/T1611/"
+        }
+      ],
+      "cis_kubernetes": [
+        {
+          "benchmark": "CIS Kubernetes Benchmark",
+          "current_upstream_edition": "2.1.0",
+          "control_id": "5.2.5",
+          "title": "Minimize the admission of containers with allowPrivilegeEscalation",
+          "benchmark_version": null,
+          "mapping_status": "candidate_number_verified_in_secondary_reference_pending_v2.1_primary_review",
+          "assessment_type": "local_static_indicator_not_cis_compliance",
+          "sources": [
+            "https://www.cisecurity.org/benchmark/kubernetes",
+            "https://github.com/aquasecurity/kube-bench/discussions/1778"
+          ]
+        }
+      ],
+      "interpretation": "Flagged configuration/capability; not proof of exploitation."
+    },
+    {
+      "id": "GA-0004",
+      "finding_id": "A-0004",
+      "rule": "CROSS_SCOPE_OPERATOR_REFERENCE",
+      "severity": "medium",
+      "classification": "conditional_review",
+      "confidence": "verified_configuration_requires_context",
+      "target_type": "edge",
+      "target": {
+        "source": "Certificate/app-ns/service-tls",
+        "target": "ClusterIssuer/cluster/org-issuer"
+      },
+      "resource": "Certificate/app-ns/service-tls",
+      "evidence": {
+        "source": "Certificate/app-ns/service-tls",
+        "reference_field": "spec.issuerRef",
+        "kind": "ClusterIssuer",
+        "name": "org-issuer",
+        "target": "ClusterIssuer/cluster/org-issuer",
+        "status": "resolved",
+        "cross_scope": true
+      },
+      "permission_grant_ids": [],
+      "description": "Custom resource references a resource in another scope",
+      "mitre_attack": [],
+      "cis_kubernetes": [
+        {
+          "topic": "Cross-scope custom resource review",
+          "benchmark_version": null,
+          "control_id": null,
+          "status": "candidate_mapping_requires_versioned_review"
+        }
+      ],
+      "interpretation": "Cross-scope reference exists; review its security implications before treating it as risky."
+    }
+  ],
+  "permission_grant_summary": {
+    "total": 2,
+    "flagged": 2,
+    "note": "One record per explicit API-group/resource/verb; wildcard values are not expanded."
+  },
+  "graph_assessment_summary": {
+    "risk": 3,
+    "conditional_review": 1,
+    "assessed_edges": 2,
+    "unassessed_edges": 5
+  },
+  "graph_layout": {
+    "RoleBinding/app-ns/secret-access": {
+      "x": 167.58,
+      "y": 276.96
+    },
+    "Deployment/app-ns/data-service": {
+      "x": 405.0,
+      "y": 117.36
+    },
+    "ServiceAccount/app-ns/scanning-bot": {
+      "x": 292.35,
+      "y": 193.09
+    },
+    "Role/app-ns/secrets-reader": {
+      "x": 55.07,
+      "y": 352.6
+    },
+    "Certificate/app-ns/service-tls": {
+      "x": 575.0,
+      "y": 397.51
+    },
+    "ClusterIssuer/cluster/org-issuer": {
+      "x": 925.0,
+      "y": 72.49
+    },
+    "ClusterIssuer/default/org-issuer": {
+      "x": 1270.0,
+      "y": 235.0
+    },
+    "MITRE/T1078": {
+      "x": 1790.0,
+      "y": 235.0
+    },
+    "MITRE/T1611": {
+      "x": 2310.0,
+      "y": 235.0
+    },
+    "NetworkPolicy/app-ns/lock-ingress": {
+      "x": 2830.0,
+      "y": 235.0
     }
   }
 }
